@@ -46,7 +46,7 @@ export default function ContactPage() {
             <div className="lg:col-span-2 flex flex-col gap-8">
               <div className="flex flex-col gap-5">
                 {[
-                  { icon: <Mail size={18} className="text-accent" />, title: 'Email Us', val: 'hello@echoloft.ai' },
+                  { icon: <Mail size={18} className="text-accent" />, title: 'Email Us', val: 'echoloft.ai@gmail.com' },
                   { icon: <MapPin size={18} className="text-accent-3" />, title: 'Headquarters', val: 'San Francisco, CA 94105' },
                   { icon: <Clock size={18} className="text-accent-2" />, title: 'Response Time', val: 'Within 24 hours (business days)' },
                 ].map(item => (
