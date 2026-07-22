@@ -1,79 +1,72 @@
-import { CheckCircle2, Zap, Brain, Shield } from 'lucide-react'
 import Container from '@/components/layout/Container'
 import TeamSlider from '@/components/sections/TeamSlider'
 import CTASection from '@/components/sections/CTASection'
-import Badge from '@/components/ui/Badge'
-
-const values = [
-  { icon: <Brain size={20} className="text-accent" />, title: 'Research-First', desc: 'Every feature is grounded in peer-reviewed NLP research and real-world benchmarks, not marketing claims.' },
-  { icon: <Shield size={20} className="text-accent-3" />, title: 'Privacy by Design', desc: 'Your data never trains our models. Full data sovereignty with VPC-isolated deployments available.' },
-  { icon: <Zap size={20} className="text-accent-2" />, title: 'Relentless Speed', desc: 'We optimize every layer of the stack — from embedding caches to FAISS index tuning — for sub-50ms latency.' },
-  { icon: <CheckCircle2 size={20} className="text-accent-3" />, title: 'Enterprise Reliability', desc: '99.9% uptime SLAs backed by multi-region infrastructure, automated failover, and dedicated incident teams.' },
-]
-
-const milestones = [
-  { year: '2022', title: 'Founded', desc: 'EchoLoft AI was incorporated in San Francisco with seed funding from top-tier VCs.' },
-  { year: '2023', title: 'Series A', desc: 'Closed $18M Series A. Launched the first RAG API with 50 design partners.' },
-  { year: '2024', title: '100+ Clients', desc: 'Crossed 100 enterprise clients. Launched multi-model support including Llama 3 and Mixtral.' },
-  { year: '2025', title: 'Global Expansion', desc: 'Opened EU & APAC data centers. Achieved SOC2 Type II certification.' },
-]
+import { Target, Lightbulb, Heart, Globe } from 'lucide-react'
 
 export default function AboutPage() {
+  const values = [
+    {icon:<Target size={20}/>,title:'Precision',desc:"Every response grounded in your actual data — not guesses. We're building a platform you can bet your business on."},
+    {icon:<Lightbulb size={20}/>,title:'Transparency',desc:'Open model selection, structured logging, and full audit trails. You always know what the AI is doing and why.'},
+    {icon:<Heart size={20}/>,title:'Empathy',desc:'We design for the people who use AI daily — not just the engineers who deploy it. Simplicity is a feature.'},
+    {icon:<Globe size={20}/>,title:'Accessibility',desc:"Enterprise-grade AI shouldn't require enterprise-grade budgets. We're democratizing intelligent document chat."},
+  ]
   return (
-    <>
+    <div className="bg-white pt-20">
+      <div className="h-[3px] bg-[#E8C547]" />
       {/* Hero */}
-      <section className="pt-32 pb-20 relative overflow-hidden">
-        <div className="absolute inset-0 grid-pattern opacity-30" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full bg-accent/6 blur-[100px]" />
-        <Container size="md" className="relative z-10 text-center">
-          <Badge variant="accent" className="mb-6">Our Story</Badge>
-          <h1 className="font-syne font-extrabold text-5xl lg:text-6xl text-text-primary mb-6">
-            We believe AI should<br />
-            <span className="gradient-text">work for everyone</span>
+      <section className="py-24 border-b border-[#e0e0e0]">
+        <Container>
+          <p className="eyebrow font-dm mb-5">Our story</p>
+          <h1 className="font-syne font-extrabold text-[clamp(48px,7vw,88px)] text-black leading-tight tracking-tight mb-7">
+            We believe AI should<br /><span className="text-[#999]">work for everyone.</span>
           </h1>
-          <p className="text-xl text-text-secondary font-dm leading-relaxed max-w-2xl mx-auto">
-            EchoLoft AI was founded by a team of ML engineers and enterprise architects who saw the gap between cutting-edge AI research and real business deployment. We bridge it.
+          <p className="text-[#555] font-dm text-xl max-w-2xl leading-relaxed">
+            EchoLoft was born from a simple frustration: enterprise AI tools were either too expensive, too opaque, or too unreliable. We built what we wished existed.
           </p>
         </Container>
       </section>
 
-      {/* Values */}
-      <section className="py-20">
+      {/* Mission */}
+      <section className="py-24 border-b border-[#e0e0e0]">
         <Container>
-          <div className="text-center mb-14">
-            <h2 className="font-syne font-bold text-3xl lg:text-4xl text-text-primary">What drives us</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {values.map(v => (
-              <div key={v.title} className="bg-surface border border-[var(--border)] rounded-2xl p-7 flex flex-col gap-4 hover:border-accent/40 transition-all duration-300 hover:-translate-y-1">
-                <div className="w-11 h-11 rounded-xl bg-surface-2 border border-[var(--border)] flex items-center justify-center">{v.icon}</div>
-                <h3 className="font-syne font-bold text-lg text-text-primary">{v.title}</h3>
-                <p className="text-sm text-text-secondary font-dm leading-relaxed">{v.desc}</p>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div>
+              <p className="eyebrow font-dm mb-5">Mission</p>
+              <h2 className="font-syne font-extrabold text-[clamp(36px,5vw,56px)] text-black leading-tight tracking-tight mb-6">
+                Make AI answers as trustworthy<br /><span className="text-[#999]">as your data.</span>
+              </h2>
+              <p className="text-[#555] font-dm leading-relaxed mb-4 text-[16px]">
+                Most LLMs hallucinate. EchoLoft's RAG pipeline ensures every response is anchored to the documents you provide. If it's not in your data, the model says so.
+              </p>
+              <p className="text-[#555] font-dm leading-relaxed text-[16px]">
+                We pair this with Groq's lightning-fast inference, a robust auth system built with JWT refresh rotation and Argon2 hashing, and a document-processing engine that handles messy real-world files.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {[{label:'Founded',value:'2024'},{label:'Team Size',value:'18'},{label:'Models Supported',value:'16'},{label:'Countries',value:'34'}].map(s=>(
+                <div key={s.label} className="border border-[#e0e0e0] rounded-2xl p-8 text-center hover:border-black hover:-translate-y-1 transition-all duration-200">
+                  <p className="font-syne font-extrabold text-[42px] text-black leading-none mb-2">{s.value}</p>
+                  <p className="text-xs text-[#999] font-dm uppercase tracking-widest">{s.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </Container>
       </section>
 
-      {/* Timeline */}
-      <section className="py-20 bg-bg-2 border-y border-[var(--border)]">
-        <Container size="md">
-          <div className="text-center mb-14">
-            <h2 className="font-syne font-bold text-3xl lg:text-4xl text-text-primary">Our journey</h2>
-          </div>
-          <div className="relative flex flex-col gap-0">
-            <div className="absolute left-[28px] top-0 bottom-0 w-px bg-gradient-to-b from-accent/40 via-accent/20 to-transparent" />
-            {milestones.map((m, i) => (
-              <div key={m.year} className="flex gap-8 pb-12 last:pb-0">
-                <div className="flex flex-col items-center">
-                  <div className="w-14 h-14 rounded-full bg-surface border-2 border-accent/30 flex items-center justify-center shrink-0 z-10">
-                    <span className="font-syne font-bold text-xs text-accent">{m.year}</span>
-                  </div>
-                </div>
-                <div className="pt-3 flex flex-col gap-1.5">
-                  <h3 className="font-syne font-bold text-xl text-text-primary">{m.title}</h3>
-                  <p className="text-text-secondary font-dm">{m.desc}</p>
-                </div>
+      {/* Values */}
+      <section className="py-24 border-b border-[#e0e0e0]">
+        <Container>
+          <p className="eyebrow font-dm mb-5">Our values</p>
+          <h2 className="font-syne font-extrabold text-[clamp(36px,5vw,56px)] text-black leading-tight tracking-tight mb-14">
+            Principles that guide<br /><span className="text-[#999]">every decision.</span>
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#e0e0e0] border border-[#e0e0e0]">
+            {values.map(v=>(
+              <div key={v.title} className="bg-white p-10 hover:bg-[#f7f7f7] transition-colors group">
+                <div className="w-10 h-10 rounded-xl bg-[#f0f0f0] flex items-center justify-center text-black mb-6 group-hover:bg-black group-hover:text-white transition-all">{v.icon}</div>
+                <h3 className="font-syne font-bold text-[15px] text-black mb-3 uppercase tracking-wide">{v.title}</h3>
+                <p className="text-sm text-[#555] font-dm leading-relaxed">{v.desc}</p>
               </div>
             ))}
           </div>
@@ -82,6 +75,6 @@ export default function AboutPage() {
 
       <TeamSlider />
       <CTASection />
-    </>
+    </div>
   )
 }
