@@ -1,91 +1,52 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { cn } from '@/lib/utils'
 import Container from '@/components/layout/Container'
 
-interface Stat {
-  value: number
-  suffix: string
-  prefix?: string
-  label: string
-  description: string
-}
-
-const stats: Stat[] = [
-  { value: 500, suffix: '+', label: 'Clients Served', description: 'From startups to Fortune 500 enterprises worldwide' },
-  { value: 99, suffix: '%', label: 'Uptime Guaranteed', description: 'Enterprise SLA with 24/7 monitoring and incident response' },
-  { value: 12, suffix: 'M+', label: 'Chats Processed', description: 'Conversations handled securely with full audit trails' },
-  { value: 48, suffix: 'ms', label: 'P99 Latency', description: 'Sub-50ms median latency on streaming responses' },
+const stats = [
+  {value:500,suffix:'+',label:'Clients served',desc:'From startups to Fortune 500 enterprises'},
+  {value:99,suffix:'%',label:'Uptime SLA',desc:'24/7 monitoring and incident response'},
+  {value:12,suffix:'M+',label:'Chats processed',desc:'Conversations handled with full audit trails'},
+  {value:48,suffix:'ms',label:'P99 latency',desc:'Sub-50ms median latency on streaming'},
 ]
 
-function Counter({ value, suffix, prefix = '', duration = 2000 }: { value: number; suffix: string; prefix?: string; duration?: number }) {
-  const [count, setCount] = useState(0)
-  const [started, setStarted] = useState(false)
-  const ref = useRef<HTMLSpanElement>(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting && !started) setStarted(true) },
-      { threshold: 0.5 }
-    )
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [started])
-
-  useEffect(() => {
-    if (!started) return
-    const startTime = performance.now()
-    const step = (now: number) => {
-      const progress = Math.min((now - startTime) / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3) // cubic ease-out
-      setCount(Math.floor(eased * value))
-      if (progress < 1) requestAnimationFrame(step)
+function Counter({value,suffix,duration=1800}:{value:number;suffix:string;duration?:number}) {
+  const [count,setCount]=useState(0)
+  const [started,setStarted]=useState(false)
+  const ref=useRef<HTMLSpanElement>(null)
+  useEffect(()=>{
+    const obs=new IntersectionObserver(([e])=>{if(e.isIntersecting&&!started)setStarted(true)},{threshold:0.5})
+    if(ref.current)obs.observe(ref.current)
+    return()=>obs.disconnect()
+  },[started])
+  useEffect(()=>{
+    if(!started)return
+    const t0=performance.now()
+    const step=(now:number)=>{
+      const p=Math.min((now-t0)/duration,1)
+      const e=1-Math.pow(1-p,3)
+      setCount(Math.floor(e*value))
+      if(p<1)requestAnimationFrame(step)
     }
     requestAnimationFrame(step)
-  }, [started, value, duration])
-
-  return (
-    <span ref={ref}>
-      {prefix}{count}{suffix}
-    </span>
-  )
+  },[started,value,duration])
+  return <span ref={ref}>{count}{suffix}</span>
 }
 
 export default function StatsCounter() {
   return (
-    <section className="py-24 relative overflow-hidden bg-bg-2">
-      {/* Background accent */}
-      <div className="absolute inset-0 grid-pattern opacity-20" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-gradient-to-b from-transparent via-accent/20 to-transparent" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full bg-accent/5 blur-[100px] pointer-events-none" />
-
-      <Container className="relative z-10">
-        <div className="text-center mb-16">
-          <p className="text-xs uppercase tracking-[0.2em] text-accent font-dm mb-3">By the Numbers</p>
-          <h2 className="font-syne font-extrabold text-4xl lg:text-5xl text-text-primary">
-            Built for scale.
-            <span className="gradient-text"> Proven in production.</span>
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[var(--border)] rounded-2xl overflow-hidden border border-[var(--border)]">
-          {stats.map((stat, i) => (
-            <div
-              key={stat.label}
-              className={cn(
-                'bg-surface flex flex-col items-center text-center p-10 gap-3 group hover:bg-surface-2 transition-colors duration-300',
-              )}
-            >
-              <div className="font-syne font-extrabold text-5xl lg:text-6xl gradient-text leading-none">
-                <Counter value={stat.value} suffix={stat.suffix} prefix={stat.prefix} duration={1800 + i * 200} />
-              </div>
-              <div className="font-syne font-bold text-base text-text-primary mt-1">{stat.label}</div>
-              <p className="text-sm text-text-muted font-dm leading-relaxed">{stat.description}</p>
-              <div className="w-8 h-0.5 bg-accent/30 group-hover:w-16 group-hover:bg-accent/60 transition-all duration-500 mt-2" />
+    <section className="bg-black">
+      <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-[#1a1a1a]">
+        {stats.map((s,i)=>(
+          <div key={s.label} className="group p-14 border-r border-b border-[#1a1a1a] hover:bg-[#0a0a0a] transition-colors duration-200 [&:nth-child(2n)]:border-r-0 lg:[&:nth-child(2n)]:border-r lg:[&:nth-child(4n)]:border-r-0">
+            <div className="font-syne font-extrabold text-[52px] lg:text-[60px] text-[#E8C547] leading-none mb-3">
+              <Counter value={s.value} suffix={s.suffix} duration={1600+i*150} />
             </div>
-          ))}
-        </div>
-      </Container>
+            <div className="font-syne font-bold text-[13px] text-white uppercase tracking-widest mb-2">{s.label}</div>
+            <div className="text-[13px] text-[#555] font-dm leading-snug">{s.desc}</div>
+            <div className="mt-6 w-6 h-px bg-[#E8C547]/30 group-hover:w-14 group-hover:bg-[#E8C547]/60 transition-all duration-500" />
+          </div>
+        ))}
+      </div>
     </section>
   )
 }
