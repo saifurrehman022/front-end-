@@ -3,13 +3,12 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   MessageSquare, Plus, Send, Upload, Globe, Zap,
-  LogOut, Loader2, X, Brain, Menu
+  LogOut, Loader2, X, Brain, Menu, Clock, Activity, FileText
 } from 'lucide-react'
 import { authApi, ragApi, type UserPublic, type Message } from '@/lib/api'
 import { getToken, clearTokens } from '@/lib/utils'
 import Button from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
-import Badge from '@/components/ui/Badge'
 
 const MODELS = [
   { id: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B' },
@@ -30,9 +29,16 @@ function parseThinking(raw: string): { thinking: string; answer: string; isThink
   return { thinking: '', answer: raw, isThinking: false }
 }
 
+function formatTime(ts: number) {
+  return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
 interface DisplayMessage extends Message {
   thinking?: string
   isThinking?: boolean
+  timestamp?: number
+  latencyMs?: number
+  model?: string
 }
 
 export default function DashboardPage() {
@@ -47,11 +53,13 @@ export default function DashboardPage() {
   const [streaming, setStreaming] = useState(false)
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [conversations, setConversations] = useState<{ id: string; preview: string }[]>([])
+  const [conversations, setConversations] = useState<{ id: string; preview: string; messageCount: number; updatedAt: number }[]>([])
   const [expandedThinking, setExpandedThinking] = useState<number[]>([])
+  const [sessionStart] = useState(Date.now())
   const bottomRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const requestStartRef = useRef<number>(0)
 
   useEffect(() => {
     if (!getToken()) { router.push('/auth/login'); return }
@@ -64,7 +72,6 @@ export default function DashboardPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Close sidebar on mobile when clicking outside
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) setSidebarOpen(false)
@@ -73,11 +80,19 @@ export default function DashboardPage() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  // Derived session stats
+  const totalMessages = messages.filter(m => m.role === 'user').length
+  const assistantMessages = messages.filter(m => m.role === 'assistant' && m.latencyMs)
+  const avgLatency = assistantMessages.length
+    ? Math.round(assistantMessages.reduce((a, m) => a + (m.latencyMs || 0), 0) / assistantMessages.length)
+    : null
+  const wordCount = messages.reduce((a, m) => a + m.content.split(/\s+/).filter(Boolean).length, 0)
+
   const newConversation = async () => {
     const { conversation_id } = await ragApi.createConversation()
     setConvId(conversation_id)
     setMessages([])
-    setConversations(prev => [{ id: conversation_id, preview: 'New conversation' }, ...prev])
+    setConversations(prev => [{ id: conversation_id, preview: 'New conversation', messageCount: 0, updatedAt: Date.now() }, ...prev])
     setSidebarOpen(false)
     return conversation_id
   }
@@ -98,10 +113,11 @@ export default function DashboardPage() {
     if (!cid) return
 
     const sentInput = input.trim()
-    setMessages(prev => [...prev, { role: 'user', content: sentInput }])
+    setMessages(prev => [...prev, { role: 'user', content: sentInput, timestamp: Date.now() }])
     setInput('')
     setStreaming(true)
-    setMessages(prev => [...prev, { role: 'assistant', content: '', thinking: '', isThinking: false }])
+    requestStartRef.current = performance.now()
+    setMessages(prev => [...prev, { role: 'assistant', content: '', thinking: '', isThinking: false, model }])
 
     try {
       const stream = await ragApi.sendMessage(cid, model, sentInput, webSearch, files.length ? files : undefined)
@@ -116,23 +132,34 @@ export default function DashboardPage() {
         const { thinking, answer, isThinking } = parseThinking(raw)
         setMessages(prev => {
           const updated = [...prev]
-          updated[updated.length - 1] = { role: 'assistant', content: answer, thinking, isThinking }
+          updated[updated.length - 1] = { ...updated[updated.length - 1], role: 'assistant', content: answer, thinking, isThinking }
           return updated
         })
       }
 
       const { thinking, answer } = parseThinking(raw)
+      const latencyMs = Math.round(performance.now() - requestStartRef.current)
       setMessages(prev => {
         const updated = [...prev]
-        updated[updated.length - 1] = { role: 'assistant', content: answer || raw, thinking, isThinking: false }
+        updated[updated.length - 1] = {
+          ...updated[updated.length - 1],
+          role: 'assistant',
+          content: answer || raw,
+          thinking,
+          isThinking: false,
+          timestamp: Date.now(),
+          latencyMs,
+        }
         return updated
       })
-      setConversations(prev => prev.map(c => c.id === cid ? { ...c, preview: sentInput.slice(0, 40) } : c))
+      setConversations(prev => prev.map(c => c.id === cid
+        ? { ...c, preview: sentInput.slice(0, 40), messageCount: c.messageCount + 2, updatedAt: Date.now() }
+        : c))
       setFiles([])
     } catch {
       setMessages(prev => {
         const updated = [...prev]
-        updated[updated.length - 1] = { role: 'assistant', content: 'Something went wrong. Please try again.' }
+        updated[updated.length - 1] = { ...updated[updated.length - 1], role: 'assistant', content: 'Something went wrong. Please try again.' }
         return updated
       })
     } finally {
@@ -159,7 +186,6 @@ export default function DashboardPage() {
   return (
     <div className="h-screen flex bg-bg overflow-hidden relative">
 
-      {/* Mobile overlay backdrop */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/60 z-20 md:hidden"
@@ -167,15 +193,13 @@ export default function DashboardPage() {
         />
       )}
 
-      {/* Sidebar — overlay on mobile, fixed on desktop */}
+      {/* Sidebar — always visible on desktop, slides on mobile */}
       <aside className={cn(
-        'flex flex-col border-r border-[var(--border)] bg-bg-2 transition-all duration-300 shrink-0 z-30',
-        // Mobile: fixed overlay, slides in/out
-        'fixed md:relative inset-y-0 left-0',
-        sidebarOpen ? 'w-72 md:w-64' : 'w-0 md:w-0',
-        'overflow-hidden'
+        'flex flex-col border-r border-[var(--border)] bg-bg-2 shrink-0 z-30 overflow-hidden',
+        'fixed md:relative inset-y-0 left-0 w-72 md:w-64',
+        'transition-transform duration-300 ease-out',
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
       )}>
-        {/* Logo */}
         <div className="p-4 border-b border-[var(--border)] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center shadow-lg shadow-accent/30">
@@ -193,7 +217,6 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* New chat */}
         <div className="p-3 shrink-0">
           <Button variant="primary" size="sm" onClick={newConversation} className="w-full">
             <Plus size={15} /> New Chat
@@ -218,11 +241,35 @@ export default function DashboardPage() {
               >
                 <div className="flex items-center gap-2">
                   <MessageSquare size={13} className="shrink-0" />
-                  <span className="truncate">{c.preview}</span>
+                  <span className="truncate flex-1">{c.preview}</span>
+                </div>
+                <div className="flex items-center gap-2 mt-1 pl-5">
+                  <span className="text-[10px] text-text-muted font-mono">{c.messageCount} msgs</span>
+                  <span className="text-[10px] text-text-muted">·</span>
+                  <span className="text-[10px] text-text-muted font-mono">{formatTime(c.updatedAt)}</span>
                 </div>
               </button>
             ))
           )}
+        </div>
+
+        {/* Session stats panel */}
+        <div className="px-3 py-3 border-t border-[var(--border)] shrink-0">
+          <p className="text-[10px] font-dm font-semibold text-text-muted uppercase tracking-widest mb-2.5 px-1">Session</p>
+          <div className="grid grid-cols-3 gap-1.5">
+            <div className="bg-surface border border-[var(--border)] rounded-lg px-2 py-2 text-center">
+              <p className="font-mono text-sm font-semibold text-text-primary">{totalMessages}</p>
+              <p className="text-[9px] text-text-muted font-dm uppercase tracking-wide mt-0.5">Sent</p>
+            </div>
+            <div className="bg-surface border border-[var(--border)] rounded-lg px-2 py-2 text-center">
+              <p className="font-mono text-sm font-semibold text-text-primary">{avgLatency ? `${avgLatency}` : '—'}</p>
+              <p className="text-[9px] text-text-muted font-dm uppercase tracking-wide mt-0.5">Avg ms</p>
+            </div>
+            <div className="bg-surface border border-[var(--border)] rounded-lg px-2 py-2 text-center">
+              <p className="font-mono text-sm font-semibold text-text-primary">{wordCount}</p>
+              <p className="text-[9px] text-text-muted font-dm uppercase tracking-wide mt-0.5">Words</p>
+            </div>
+          </div>
         </div>
 
         {/* User info */}
@@ -250,61 +297,76 @@ export default function DashboardPage() {
       <div className="flex-1 flex flex-col min-w-0 w-full">
 
         {/* Topbar */}
-        <header className="h-14 border-b border-[var(--border)] flex items-center gap-2 px-3 bg-bg-2/50 backdrop-blur shrink-0">
-          {/* Hamburger — always visible */}
-          <button
-            onClick={() => setSidebarOpen(p => !p)}
-            className="p-2 rounded-xl text-text-muted hover:text-text-primary hover:bg-surface transition-colors shrink-0"
-          >
-            <Menu size={17} />
-          </button>
+        <header className="border-b border-[var(--border)] bg-bg-2/50 backdrop-blur shrink-0">
+          <div className="h-14 flex items-center gap-2 px-3">
+            <button
+              onClick={() => setSidebarOpen(p => !p)}
+              className="p-2 rounded-xl text-text-muted hover:text-text-primary hover:bg-surface transition-colors shrink-0 md:hidden"
+            >
+              <Menu size={17} />
+            </button>
 
-          {/* Model selector — truncated on mobile */}
-          <select
-            value={model}
-            onChange={e => setModel(e.target.value)}
-            className="flex-1 min-w-0 bg-surface border border-[var(--border)] rounded-xl px-2 py-1.5 text-xs font-dm text-text-secondary focus:outline-none focus:border-accent hover:border-accent/40 transition-colors truncate"
-          >
-            {MODELS.map(m => (
-              <option key={m.id} value={m.id}>{m.label}</option>
-            ))}
-          </select>
+            <select
+              value={model}
+              onChange={e => setModel(e.target.value)}
+              className="flex-1 min-w-0 bg-surface border border-[var(--border)] rounded-xl px-2 py-1.5 text-xs font-mono text-text-secondary focus:outline-none focus:border-accent hover:border-accent/40 transition-colors truncate"
+            >
+              {MODELS.map(m => (
+                <option key={m.id} value={m.id}>{m.label}</option>
+              ))}
+            </select>
 
-          {/* Web search toggle */}
-          <button
-            onClick={() => setWebSearch(p => !p)}
-            className={cn(
-              'flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-dm border transition-all shrink-0',
-              webSearch
-                ? 'bg-accent-3/10 border-accent-3/30 text-[#38d9a9]'
-                : 'bg-surface border-[var(--border)] text-text-muted hover:text-text-primary'
-            )}
-          >
-            <Globe size={13} />
-            <span className="hidden sm:inline">{webSearch ? 'ON' : 'Web'}</span>
-          </button>
+            <button
+              onClick={() => setWebSearch(p => !p)}
+              className={cn(
+                'flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-dm border transition-all shrink-0',
+                webSearch
+                  ? 'bg-accent-3/10 border-accent-3/30 text-[#38d9a9]'
+                  : 'bg-surface border-[var(--border)] text-text-muted hover:text-text-primary'
+              )}
+            >
+              <Globe size={13} />
+              <span className="hidden sm:inline">{webSearch ? 'ON' : 'Web'}</span>
+            </button>
 
-          {/* Upload */}
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-dm border bg-surface border-[var(--border)] text-text-muted hover:text-text-primary hover:border-accent/40 transition-all shrink-0 relative"
-          >
-            <Upload size={13} />
-            <span className="hidden sm:inline">Upload</span>
-            {files.length > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-accent text-white text-[9px] flex items-center justify-center font-dm font-bold">
-                {files.length}
+            <button
+              onClick={() => fileRef.current?.click()}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-dm border bg-surface border-[var(--border)] text-text-muted hover:text-text-primary hover:border-accent/40 transition-all shrink-0 relative"
+            >
+              <Upload size={13} />
+              <span className="hidden sm:inline">Upload</span>
+              {files.length > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-accent text-white text-[9px] flex items-center justify-center font-dm font-bold">
+                  {files.length}
+                </span>
+              )}
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              multiple
+              accept=".pdf,.docx,.xlsx,.csv,.jpg,.jpeg,.png"
+              className="hidden"
+              onChange={e => setFiles(Array.from(e.target.files || []))}
+            />
+          </div>
+
+          {/* Live stats strip */}
+          {messages.length > 0 && (
+            <div className="flex items-center gap-4 px-4 pb-2 -mt-1">
+              <span className="flex items-center gap-1 text-[10px] font-mono text-text-muted">
+                <Activity size={10} /> {model.split('/').pop()}
               </span>
-            )}
-          </button>
-          <input
-            ref={fileRef}
-            type="file"
-            multiple
-            accept=".pdf,.docx,.xlsx,.csv,.jpg,.jpeg,.png"
-            className="hidden"
-            onChange={e => setFiles(Array.from(e.target.files || []))}
-          />
+              {avgLatency && (
+                <span className="flex items-center gap-1 text-[10px] font-mono text-text-muted">
+                  <Clock size={10} /> avg {avgLatency}ms
+                </span>
+              )}
+              <span className="flex items-center gap-1 text-[10px] font-mono text-text-muted">
+                <FileText size={10} /> {totalMessages} sent
+              </span>
+            </div>
+          )}
         </header>
 
         {/* Messages */}
@@ -343,7 +405,6 @@ export default function DashboardPage() {
             <div className="max-w-3xl mx-auto flex flex-col gap-4 sm:gap-6">
               {messages.map((msg, i) => (
                 <div key={i} className={cn('flex gap-2 sm:gap-3', msg.role === 'user' ? 'flex-row-reverse' : 'flex-row')}>
-                  {/* Avatar */}
                   <div className={cn(
                     'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-syne font-bold text-xs shrink-0 mt-1',
                     msg.role === 'user'
@@ -356,8 +417,7 @@ export default function DashboardPage() {
                     }
                   </div>
 
-                  <div className="flex flex-col gap-2 max-w-[85%] sm:max-w-[78%] min-w-0">
-                    {/* Thinking block */}
+                  <div className="flex flex-col gap-1.5 max-w-[85%] sm:max-w-[78%] min-w-0">
                     {msg.role === 'assistant' && msg.thinking && (
                       <div className="rounded-xl border border-[#a78bfa]/20 bg-[#a78bfa]/5 overflow-hidden">
                         <button
@@ -378,7 +438,6 @@ export default function DashboardPage() {
                       </div>
                     )}
 
-                    {/* Message bubble */}
                     <div className={cn(
                       'rounded-2xl px-4 py-3 text-sm font-dm leading-relaxed whitespace-pre-wrap break-words',
                       msg.role === 'user'
@@ -397,6 +456,27 @@ export default function DashboardPage() {
                         </span>
                       ) : msg.content}
                     </div>
+
+                    {/* Metadata row */}
+                    {(msg.timestamp || msg.latencyMs) && (
+                      <div className={cn('flex items-center gap-2 px-1', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
+                        {msg.timestamp && (
+                          <span className="text-[10px] font-mono text-text-muted">{formatTime(msg.timestamp)}</span>
+                        )}
+                        {msg.latencyMs && (
+                          <>
+                            <span className="text-[10px] text-text-muted">·</span>
+                            <span className="text-[10px] font-mono text-text-muted">{msg.latencyMs}ms</span>
+                          </>
+                        )}
+                        {msg.model && msg.role === 'assistant' && (
+                          <>
+                            <span className="text-[10px] text-text-muted">·</span>
+                            <span className="text-[10px] font-mono text-text-muted">{msg.model.split('/').pop()}</span>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -447,7 +527,7 @@ export default function DashboardPage() {
             <button
               onClick={send}
               disabled={!input.trim() || streaming}
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-accent flex items-center justify-center text-white hover:bg-[#5856e8] disabled:opacity-40 disabled:pointer-events-none transition-all shadow-lg shadow-accent/20 shrink-0"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-accent flex items-center justify-center text-white hover:brightness-110 disabled:opacity-40 disabled:pointer-events-none transition-all shadow-lg shadow-accent/20 shrink-0"
             >
               {streaming
                 ? <Loader2 size={16} className="animate-spin" />
