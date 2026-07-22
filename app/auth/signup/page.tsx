@@ -1,104 +1,117 @@
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { User, Lock, Mail, Building2, Zap, ArrowRight, Eye, EyeOff, CheckCircle2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Zap, Eye, EyeOff, CheckCircle2, ArrowRight } from 'lucide-react'
 import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
 import { authApi } from '@/lib/api'
-import { setTokens } from '@/lib/utils'
-
-const perks = ['14-day free trial', 'No credit card required', '99.9% uptime SLA']
 
 export default function SignupPage() {
   const router = useRouter()
   const [form, setForm] = useState({ username: '', email: '', company: '', password: '', confirm: '' })
   const [showPw, setShowPw] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
   const handle = (e: React.ChangeEvent<HTMLInputElement>) => setForm(p => ({ ...p, [e.target.name]: e.target.value }))
-
+  const strength = (pw: string) => { let s=0; if(pw.length>=8)s++; if(/[A-Z]/.test(pw))s++; if(/[0-9]/.test(pw))s++; if(/[^A-Za-z0-9]/.test(pw))s++; return s }
+  const s = strength(form.password)
+  const sColors = ['bg-red-400','bg-orange-400','bg-yellow-400','bg-emerald-400','bg-emerald-400']
+  const sLabels = ['','Weak','Fair','Good','Strong']
   const submit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (form.password !== form.confirm) { setError('Passwords do not match'); return }
-    if (form.password.length < 8) { setError('Password must be at least 8 characters'); return }
+    e.preventDefault(); setError('')
+    if (form.password !== form.confirm) { setError('Passwords do not match.'); return }
+    if (form.password.length < 8) { setError('Password must be at least 8 characters.'); return }
     setLoading(true)
-    setError('')
     try {
-      await authApi.register({ username: form.username, email: form.email, company: form.company, password: form.password })
-      const tokens = await authApi.login({ username: form.username, password: form.password })
-      setTokens(tokens.access_token, tokens.refresh_token)
-      router.push('/dashboard')
-    } catch (err: any) {
-      setError(err?.detail || 'Registration failed. Username or email may already exist.')
-    } finally {
-      setLoading(false)
-    }
+      await authApi.register({ username: form.username.trim().toLowerCase(), email: form.email.toLowerCase(), company: form.company, password: form.password })
+      setSuccess(true)
+      setTimeout(() => router.push('/auth/login'), 2000)
+    } catch (err: any) { setError(err?.detail || 'Registration failed. Please try again.') }
+    finally { setLoading(false) }
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4 py-12">
-      <div className="absolute inset-0 grid-pattern opacity-30" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[500px] rounded-full bg-accent/7 blur-[100px]" />
-
-      <div className="relative z-10 w-full max-w-md">
-        <div className="flex items-center justify-center gap-2.5 mb-8">
-          <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center shadow-lg shadow-accent/30">
-            <Zap size={18} className="text-white" />
-          </div>
-          <span className="font-syne font-bold text-2xl text-text-primary">Echo<span className="text-accent">Loft</span><span className="text-accent-3 text-sm">AI</span></span>
+  if (success) return (
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="text-center flex flex-col items-center gap-5">
+        <div className="w-20 h-20 rounded-full bg-emerald-50 border-2 border-emerald-200 flex items-center justify-center">
+          <CheckCircle2 size={36} className="text-emerald-500" />
         </div>
+        <h2 className="font-syne font-bold text-2xl text-black">Account Created!</h2>
+        <p className="text-[#999] font-dm">Redirecting you to sign in…</p>
+      </div>
+    </div>
+  )
 
-        <div className="bg-surface border border-[var(--border)] rounded-2xl p-8 shadow-xl shadow-black/30">
-          <div className="mb-7">
-            <h1 className="font-syne font-bold text-2xl text-text-primary mb-1">Create your account</h1>
-            <p className="text-sm text-text-secondary font-dm">Start your 14-day free trial today</p>
-          </div>
-
-          <div className="flex flex-wrap gap-2 mb-6">
-            {perks.map(p => (
-              <div key={p} className="flex items-center gap-1.5 text-xs text-text-secondary font-dm">
-                <CheckCircle2 size={12} className="text-accent-3" />{p}
+  return (
+    <div className="min-h-screen flex bg-white">
+      {/* Left panel */}
+      <div className="hidden lg:flex flex-col justify-between w-[44%] bg-black p-14">
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-[#E8C547] flex items-center justify-center"><Zap size={17} className="text-black" fill="black" /></div>
+          <span className="font-syne font-bold text-xl text-white">EchoLoft<span className="text-[#888] text-xs font-dm ml-1">AI</span></span>
+        </Link>
+        <div className="flex flex-col gap-5">
+          {['No credit card required','Free tier includes 50 messages/month','Cancel anytime'].map(item => (
+            <div key={item} className="flex items-center gap-3">
+              <div className="w-5 h-5 rounded-full bg-[#E8C547]/15 border border-[#E8C547]/30 flex items-center justify-center shrink-0">
+                <CheckCircle2 size={12} className="text-[#E8C547]" />
               </div>
-            ))}
-          </div>
-
-          <form onSubmit={submit} className="flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <Input label="Username" name="username" value={form.username} onChange={handle} placeholder="yourname" required minLength={3} icon={<User size={15} />} />
-              <Input label="Company" name="company" value={form.company} onChange={handle} placeholder="Acme Corp" icon={<Building2 size={15} />} />
+              <span className="text-[#888] font-dm text-sm">{item}</span>
             </div>
-            <Input label="Work Email" name="email" type="email" value={form.email} onChange={handle} placeholder="you@company.com" required icon={<Mail size={15} />} />
+          ))}
+        </div>
+        <p className="text-[#444] text-xs font-dm">© {new Date().getFullYear()} EchoLoft AI</p>
+      </div>
+      {/* Right panel */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-16">
+        <div className="w-full max-w-sm">
+          <div className="lg:hidden mb-10 flex justify-center">
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center"><Zap size={17} className="text-[#E8C547]" fill="#E8C547" /></div>
+              <span className="font-syne font-bold text-xl text-black">EchoLoft<span className="text-[#999] text-xs font-dm ml-1">AI</span></span>
+            </Link>
+          </div>
+          <h1 className="font-syne font-extrabold text-[32px] text-black mb-1 tracking-tight">Create your account</h1>
+          <p className="text-[#999] font-dm text-sm mb-10">Start your AI journey — free forever</p>
+          <form onSubmit={submit} className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input label="Username" name="username" value={form.username} onChange={handle} placeholder="johndoe" required minLength={3} />
+              <Input label="Company" name="company" value={form.company} onChange={handle} placeholder="Acme Corp" />
+            </div>
+            <Input label="Email Address" name="email" type="email" value={form.email} onChange={handle} placeholder="you@company.com" required />
             <div className="relative">
-              <Input label="Password" name="password" type={showPw ? 'text' : 'password'} value={form.password} onChange={handle} placeholder="Min. 8 characters" required icon={<Lock size={15} />} />
-              <button type="button" onClick={() => setShowPw(p => !p)} className="absolute right-3.5 bottom-3 text-text-muted hover:text-text-primary transition-colors">
-                {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
+              <Input label="Password" name="password" type={showPw ? 'text' : 'password'} value={form.password} onChange={handle} placeholder="Min. 8 characters" required />
+              <button type="button" onClick={() => setShowPw(p => !p)} className="absolute right-4 bottom-3.5 text-[#999] hover:text-black transition-colors">
+                {showPw ? <EyeOff size={15}/> : <Eye size={15}/>}
               </button>
             </div>
-            <Input label="Confirm Password" name="confirm" type={showPw ? 'text' : 'password'} value={form.confirm} onChange={handle} placeholder="Repeat password" required icon={<Lock size={15} />} />
-
-            {error && <div className="p-3.5 bg-red-500/10 border border-red-500/20 rounded-xl text-sm text-red-400 font-dm">{error}</div>}
-
-            <Button type="submit" variant="primary" size="lg" loading={loading} className="group w-full mt-1">
-              Create Account
-              <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </form>
-
-          <p className="text-xs text-text-muted font-dm text-center mt-4">
-            By signing up, you agree to our{' '}
-            <Link href="/legal/terms" className="text-accent hover:underline">Terms</Link>
-            {' '}and{' '}
-            <Link href="/legal/privacy" className="text-accent hover:underline">Privacy Policy</Link>
-          </p>
-
-          <div className="mt-5 pt-5 border-t border-[var(--border-2)] text-center">
-            <p className="text-sm text-text-muted font-dm">
-              Already have an account?{' '}
-              <Link href="/auth/login" className="text-accent hover:text-accent-2 transition-colors font-medium">Sign in</Link>
+            {form.password.length > 0 && (
+              <div className="flex flex-col gap-1.5 -mt-1">
+                <div className="flex gap-1">
+                  {[1,2,3,4].map(i => <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i<=s ? sColors[s] : 'bg-[#e0e0e0]'}`} />)}
+                </div>
+                <p className="text-xs text-[#999] font-dm">{sLabels[s]} password</p>
+              </div>
+            )}
+            <Input label="Confirm Password" name="confirm" type={showPw ? 'text' : 'password'} value={form.confirm} onChange={handle} placeholder="Re-enter password" required
+              error={form.confirm && form.confirm !== form.password ? 'Passwords do not match' : undefined} />
+            {error && <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 font-dm">{error}</div>}
+            <button type="submit" disabled={loading}
+              className="group w-full h-[52px] bg-black text-white rounded-full text-sm font-dm font-semibold hover:bg-[#222] disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2 mt-1">
+              {loading ? <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                : <>Create Account <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform"/></>}
+            </button>
+            <p className="text-center text-xs text-[#999] font-dm mt-1">
+              By signing up you agree to our{' '}
+              <Link href="/legal/terms" className="text-black font-semibold hover:underline">Terms</Link> &amp;{' '}
+              <Link href="/legal/privacy" className="text-black font-semibold hover:underline">Privacy Policy</Link>.
             </p>
-          </div>
+          </form>
+          <p className="text-center text-sm text-[#999] font-dm mt-8">
+            Already have an account?{' '}
+            <Link href="/auth/login" className="text-black font-semibold hover:underline">Sign in</Link>
+          </p>
         </div>
       </div>
     </div>
