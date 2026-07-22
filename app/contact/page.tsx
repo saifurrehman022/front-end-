@@ -15,9 +15,8 @@ export default function ContactPage() {
     setSent(true); setLoading(false)
   }
   return (
-    <div className="bg-white pt-20">
-      {/* Top amber bar */}
-      <div className="h-[3px] bg-[#E8C547]" />
+    <div className="bg-[#f5f8f5] pt-20">
+      <div className="h-[3px] bg-[#C89A2E]" />
       <section className="py-24">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
@@ -25,9 +24,9 @@ export default function ContactPage() {
             <div>
               <p className="eyebrow font-dm mb-5">Get in touch</p>
               <h1 className="font-syne font-extrabold text-[clamp(40px,6vw,72px)] text-black leading-tight tracking-tight mb-6">
-                Let's build something<br /><span className="text-[#999]">remarkable.</span>
+                Let's build something<br /><span className="text-[#7c8a7c]">remarkable.</span>
               </h1>
-              <p className="text-[#555] font-dm text-lg leading-relaxed mb-12 max-w-md">
+              <p className="text-[#4a564a] font-dm text-lg leading-relaxed mb-12 max-w-md">
                 Whether you need a demo, have a technical question, or want to explore enterprise pricing — we're here.
               </p>
               <div className="flex flex-col gap-6 mb-12">
@@ -38,9 +37,9 @@ export default function ContactPage() {
                   {icon:<MessageSquare size={18}/>,label:'Response Time',value:'Within 24 hours'},
                 ].map(item => (
                   <div key={item.label} className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-[#f0f0f0] flex items-center justify-center text-black">{item.icon}</div>
+                    <div className="w-10 h-10 rounded-full bg-[#e2ebe2] flex items-center justify-center text-black">{item.icon}</div>
                     <div>
-                      <p className="text-[10px] text-[#999] font-dm uppercase tracking-widest">{item.label}</p>
+                      <p className="text-[10px] text-[#7c8a7c] font-dm uppercase tracking-widest">{item.label}</p>
                       <p className="text-sm text-black font-dm font-medium">{item.value}</p>
                     </div>
                   </div>
@@ -48,16 +47,16 @@ export default function ContactPage() {
               </div>
             </div>
             {/* Right form */}
-            <div className="border border-[#e0e0e0] rounded-2xl p-8 lg:p-10">
+            <div className="border border-[#cfdfcf] rounded-2xl p-8 lg:p-10">
               {sent ? (
                 <div className="flex flex-col items-center justify-center gap-5 py-16 text-center">
                   <div className="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-200 flex items-center justify-center">
                     <CheckCircle2 size={28} className="text-emerald-500" />
                   </div>
                   <h3 className="font-syne font-bold text-xl text-black">Message Sent!</h3>
-                  <p className="text-[#999] font-dm text-sm">We'll get back to you within 24 hours.</p>
+                  <p className="text-[#7c8a7c] font-dm text-sm">We'll get back to you within 24 hours.</p>
                   <button onClick={() => { setSent(false); setForm({name:'',email:'',company:'',message:''}) }}
-                    className="h-10 px-6 border border-[#e0e0e0] text-black rounded-full text-sm font-dm font-medium hover:border-black transition-colors">
+                    className="h-10 px-6 border border-[#cfdfcf] text-black rounded-full text-sm font-dm font-medium hover:border-black transition-colors">
                     Send Another
                   </button>
                 </div>
@@ -70,13 +69,13 @@ export default function ContactPage() {
                   </div>
                   <Input label="Company (optional)" name="company" value={form.company} onChange={handle} placeholder="Acme Corp" />
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-[#999] font-dm uppercase tracking-widest">Message</label>
+                    <label className="text-xs font-semibold text-[#7c8a7c] font-dm uppercase tracking-widest">Message</label>
                     <textarea name="message" value={form.message} onChange={handle} rows={5} required
                       placeholder="Tell us what you're building..."
-                      className="w-full bg-[#f7f7f7] border border-[#e0e0e0] rounded-xl px-4 py-3 text-black font-dm text-sm placeholder:text-[#bbb] focus:outline-none focus:border-black focus:bg-white hover:border-[#ccc] transition-all resize-none" />
+                      className="w-full bg-[#edf3ed] border border-[#cfdfcf] rounded-xl px-4 py-3 text-black font-dm text-sm placeholder:text-[#9aab9a] focus:outline-none focus:border-black focus:bg-[#f5f8f5] hover:border-[#b8ccb8] transition-all resize-none" />
                   </div>
                   <button type="submit" disabled={loading}
-                    className="group w-full h-[52px] bg-black text-white rounded-full text-sm font-dm font-semibold hover:bg-[#222] disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2">
+                    className="group w-full h-[52px] bg-black text-white rounded-full text-sm font-dm font-semibold hover:bg-[#1e1e1e] disabled:opacity-50 disabled:pointer-events-none transition-all flex items-center justify-center gap-2">
                     {loading ? <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
                       : <>Send Message <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform"/></>}
                   </button>
