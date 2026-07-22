@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Syne, DM_Sans } from 'next/font/google'
+import { Syne, DM_Sans, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import ConditionalLayout from '@/components/layout/ConditionalLayout'
 
@@ -15,7 +15,14 @@ const dmSans = DM_Sans({
   weight: ['300', '400', '500'],
   variable: '--font-dm',
   display: 'swap',
-}) 
+})
+
+const mono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-mono',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'EchoLoft AI — Intelligent RAG Chat for Enterprise',
@@ -30,7 +37,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${syne.variable} ${dmSans.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${syne.variable} ${dmSans.variable} ${mono.variable}`} suppressHydrationWarning>
       <body className="noise">
         <ConditionalLayout>{children}</ConditionalLayout>
       </body>
