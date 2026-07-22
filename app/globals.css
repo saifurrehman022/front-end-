@@ -2,28 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── ECHOLOFT AI — UBER CAREERS INSPIRED DESIGN SYSTEM ── */
-/* Pure white bg, pure black text, pill shapes, amber accent, editorial spacing */
+/* ── DESIGN SYSTEM — restrained, editorial, black/white with a single accent ── */
 :root {
   --bg:             #ffffff;
-  --bg-2:           #f7f7f7;
-  --bg-3:           #f0f0f0;
+  --bg-2:           #fafafa;
+  --bg-3:           #f2f2f2;
   --surface:        #ffffff;
-  --surface-2:      #f7f7f7;
-  --border:         #e0e0e0;
-  --border-2:       #ebebeb;
+  --surface-2:      #fafafa;
+  --border:         #e4e4e4;
+  --border-2:       #ececec;
+
   --black:          #000000;
-  --black-2:        #111111;
-  --black-3:        #222222;
-  --gray-400:       #999999;
-  --gray-500:       #777777;
-  --gray-600:       #555555;
-  --amber:          #E8C547;
-  --amber-2:        #F5D76E;
-  --amber-3:        #c9a82e;
+  --black-2:        #0d0d0d;
+  --black-3:        #1a1a1a;
+
+  --gray-400:       #9a9a9a;
+  --gray-500:       #7a7a7a;
+  --gray-600:       #575757;
+
+  /* Accent — used sparingly, never as a glow */
+  --accent:         #E8B923;
+  --accent-hover:   #d1a51e;
+
   --text-primary:   #000000;
-  --text-secondary: #555555;
-  --text-muted:     #999999;
+  --text-secondary: #4d4d4d;
+  --text-muted:     #8f8f8f;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,71 +39,70 @@ body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-h1,h2,h3,h4,h5,h6 {
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-syne), 'Syne', sans-serif;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  font-weight: 700; /* drop the "extrabold everywhere" habit — reserve 800 for hero only */
 }
 
-::-webkit-scrollbar { width: 4px; }
+a { color: inherit; }
+
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-2); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
-::selection { background: rgba(232,197,71,0.3); color: #000; }
+::selection { background: rgba(232, 185, 35, 0.22); color: #000; }
 
-/* ANIMATIONS */
-@keyframes marquee-anim {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
+/* ANIMATIONS — subtler, shorter travel, no bounce */
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-@keyframes counter-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes marquee-anim {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
-.animate-marquee  { animation: marquee-anim 28s linear infinite; }
-.animate-slide-up { animation: slide-up 0.65s cubic-bezier(0.22,1,0.36,1) forwards; }
-.animate-fade-in  { animation: fade-in 0.4s ease forwards; }
+.animate-slide-up { animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-fade-in  { animation: fade-in 0.35s ease forwards; }
+.animate-marquee  { animation: marquee-anim 32s linear infinite; }
 
 /* NAV */
 .nav-scrolled {
-  background: rgba(255,255,255,0.94);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
 }
 
-/* PILL SHAPE */
 .pill { border-radius: 9999px !important; }
 
-/* EYEBROW TEXT */
+/* EYEBROW — smaller, tighter, no oversized letterspacing */
 .eyebrow {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
-/* STATUS DOT */
+/* STATUS DOT — no pulse glow, just a calm blink */
 .status-dot {
-  width: 7px; height: 7px;
+  width: 6px; height: 6px;
   border-radius: 50%;
-  background: #22c55e;
+  background: #1a9e5c;
   display: inline-block;
-  animation: pulse 2s ease-in-out infinite;
+  animation: pulse 2.4s ease-in-out infinite;
 }
 @keyframes pulse {
-  0%,100% { opacity: 1; }
-  50%      { opacity: 0.4; }
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
 }
