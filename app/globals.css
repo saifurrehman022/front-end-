@@ -3,29 +3,28 @@
 @tailwind utilities;
 
 :root {
-  --bg:             #ffffff;
-  --bg-2:           #f8f8f6;
-  --bg-3:           #f0f0ed;
-  --surface:        #ffffff;
-  --surface-2:      #f8f8f6;
-  --border:         #e3e3df;
-  --border-2:       #ececea;
+  --bg:             #f5f8f5;
+  --bg-2:           #edf3ed;
+  --bg-3:           #e2ebe2;
+  --surface:        #f5f8f5;
+  --surface-2:      #edf3ed;
+  --border:         #cfdfcf;
+  --border-2:       #dbe8db;
 
   --black:          #0a0a0a;
   --black-2:        #131313;
   --black-3:        #1e1e1e;
 
-  --gray-400:       #97968f;
-  --gray-500:       #78776f;
-  --gray-600:       #55544d;
+  --gray-400:       #8b988b;
+  --gray-500:       #6e7c6e;
+  --gray-600:       #4a564a;
 
-  /* Signal amber — used as a mark, never a fill */
   --signal:         #C89A2E;
   --signal-dim:     rgba(200, 154, 46, 0.12);
 
-  --text-primary:   #0a0a0a;
-  --text-secondary: #4d4c46;
-  --text-muted:     #8f8e87;
+  --text-primary:   #0c140c;
+  --text-secondary: #4a564a;
+  --text-muted:     #7c8a7c;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
