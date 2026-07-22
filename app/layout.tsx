@@ -15,7 +15,7 @@ const dmSans = DM_Sans({
   weight: ['300', '400', '500'],
   variable: '--font-dm',
   display: 'swap',
-})
+}) 
 
 export const metadata: Metadata = {
   title: 'EchoLoft AI — Intelligent RAG Chat for Enterprise',
