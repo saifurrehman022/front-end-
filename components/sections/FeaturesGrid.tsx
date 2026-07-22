@@ -2,95 +2,43 @@ import { Brain, Zap, Shield, Globe, FileText, BarChart3, Cpu, Lock } from 'lucid
 import Container from '@/components/layout/Container'
 
 const features = [
-  {
-    icon: <Brain size={22} />,
-    title: 'RAG-Powered Intelligence',
-    desc: 'Upload any document — PDFs, DOCX, XLSX, images — and get answers grounded in your actual data using FAISS vector search.',
-    accent: 'accent',
-  },
-  {
-    icon: <Zap size={22} />,
-    title: 'Streamed Responses',
-    desc: 'Real-time token streaming via Groq\'s ultra-fast inference. First token in under 50ms. No waiting, no spinners.',
-    accent: 'accent-3',
-  },
-  {
-    icon: <Globe size={22} />,
-    title: 'Live Web Search',
-    desc: 'Integrated DuckDuckGo tool-calling. The model decides when to search — you always get the freshest answer.',
-    accent: 'accent-2',
-  },
-  {
-    icon: <Shield size={22} />,
-    title: 'JWT Auth + Refresh Rotation',
-    desc: 'Argon2id-hashed passwords, short-lived access tokens, and automatic refresh rotation with full session revocation.',
-    accent: 'accent',
-  },
-  {
-    icon: <FileText size={22} />,
-    title: 'Multi-Format Ingestion',
-    desc: 'Extract text from PDF, Word, Excel, CSV, and even scanned images via OCR — all in a single upload.',
-    accent: 'accent-3',
-  },
-  {
-    icon: <Cpu size={22} />,
-    title: '16 Model Selection',
-    desc: 'Choose from Llama 4, Kimi K2, Qwen 3, and GPT-OSS models. Swap models per conversation with no friction.',
-    accent: 'accent-2',
-  },
-  {
-    icon: <BarChart3 size={22} />,
-    title: 'Conversation Memory',
-    desc: 'Full multi-turn conversation history persisted in MongoDB. Resume any session with complete context intact.',
-    accent: 'accent',
-  },
-  {
-    icon: <Lock size={22} />,
-    title: 'Enterprise Ready',
-    desc: 'Audit-log ready architecture, structured JSON logging, and environment-based config for SOC2-aligned deployments.',
-    accent: 'accent-3',
-  },
+  {icon:<Brain size={20}/>,title:'RAG intelligence',desc:'Upload any document — PDFs, DOCX, XLSX, images — and get answers grounded in your actual data using FAISS vector search.',tag:'Vector search'},
+  {icon:<Zap size={20}/>,title:'Streamed responses',desc:"Real-time token streaming via Groq's ultra-fast inference. First token under 50ms. No waiting, no spinners.",tag:'Groq powered'},
+  {icon:<Globe size={20}/>,title:'Live web search',desc:'Integrated DuckDuckGo tool-calling. The model decides when to search — you always get the freshest answer.',tag:'Real-time'},
+  {icon:<Shield size={20}/>,title:'JWT auth + rotation',desc:'Argon2id-hashed passwords, short-lived access tokens, and automatic refresh rotation with full session revocation.',tag:'Enterprise-grade'},
+  {icon:<FileText size={20}/>,title:'Multi-format ingestion',desc:'Extract text from PDF, Word, Excel, CSV, and even scanned images via OCR — all in a single upload.',tag:'OCR included'},
+  {icon:<Cpu size={20}/>,title:'16 model selection',desc:'Choose from Llama 4, Kimi K2, Qwen 3, and GPT-OSS models. Swap models per conversation with no friction.',tag:'Multi-model'},
+  {icon:<BarChart3 size={20}/>,title:'Conversation memory',desc:'Full multi-turn conversation history persisted in MongoDB. Resume any session with complete context intact.',tag:'Persistent'},
+  {icon:<Lock size={20}/>,title:'RabbitMQ events',desc:'Async event streaming for auth, chat, and audit logs via CloudAMQP — graceful degradation built-in.',tag:'Event-driven'},
 ]
-
-const accentMap: Record<string, string> = {
-  accent: 'text-accent bg-accent/10 border-accent/20',
-  'accent-2': 'text-[#a78bfa] bg-[#a78bfa]/10 border-[#a78bfa]/20',
-  'accent-3': 'text-[#38d9a9] bg-[#38d9a9]/10 border-[#38d9a9]/20',
-}
 
 export default function FeaturesGrid() {
   return (
-    <section className="py-24 relative">
-      <Container>
-        <div className="text-center mb-16">
-          <p className="text-xs uppercase tracking-[0.2em] text-accent font-dm mb-3">Platform Capabilities</p>
-          <h2 className="font-syne font-extrabold text-4xl lg:text-5xl text-text-primary">
-            Everything you need.
-            <br />
-            <span className="gradient-text">Nothing you don't.</span>
-          </h2>
-          <p className="text-text-secondary font-dm text-lg mt-4 max-w-xl mx-auto">
-            A complete AI infrastructure stack — from auth to inference — production-ready out of the box.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {features.map((f) => (
-            <div
-              key={f.title}
-              className="group bg-surface border border-[var(--border)] rounded-2xl p-6 flex flex-col gap-4 hover:border-accent/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/8 transition-all duration-300"
-            >
-              <div className={`w-10 h-10 rounded-xl border flex items-center justify-center ${accentMap[f.accent]}`}>
+    <section className="bg-white">
+      <Container className="pt-20 pb-10">
+        <p className="eyebrow font-dm mb-5">Platform capabilities</p>
+        <h2 className="font-syne font-extrabold text-[clamp(36px,5vw,60px)] text-black mb-0 leading-tight">
+          Everything you need.<br /><span className="text-[#999]">Nothing you don't.</span>
+        </h2>
+      </Container>
+      {/* Full bleed grid */}
+      <div className="border-t border-[#e0e0e0]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((f, i) => (
+            <div key={f.title}
+              className="group p-10 border-r border-b border-[#e0e0e0] hover:bg-[#f7f7f7] transition-colors duration-200 last:border-r-0 [&:nth-child(4n)]:border-r-0 sm:[&:nth-child(2n)]:border-r-0 lg:[&:nth-child(2n)]:border-r lg:[&:nth-child(4n)]:border-r-0">
+              <div className="w-10 h-10 rounded-xl bg-[#f0f0f0] flex items-center justify-center text-black mb-5 group-hover:bg-black group-hover:text-white transition-all duration-200">
                 {f.icon}
               </div>
-              <div>
-                <h3 className="font-syne font-bold text-base text-text-primary mb-2">{f.title}</h3>
-                <p className="text-sm text-text-secondary font-dm leading-relaxed">{f.desc}</p>
-              </div>
+              <h3 className="font-syne font-bold text-[14px] text-black mb-2.5 uppercase tracking-wide">{f.title}</h3>
+              <p className="text-[13.5px] text-[#555] font-dm leading-relaxed mb-5">{f.desc}</p>
+              <span className="inline-block px-3 py-1 rounded-full bg-[#f0f0f0] text-[11px] font-semibold text-[#555] font-dm group-hover:bg-black group-hover:text-white transition-all duration-200">
+                {f.tag}
+              </span>
             </div>
           ))}
         </div>
-      </Container>
+      </div>
     </section>
   )
 }
