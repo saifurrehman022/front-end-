@@ -3,9 +3,9 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   MessageSquare, Plus, Send, Upload, Globe, Zap,
-  LogOut, Loader2, X, Brain, Menu, Clock, Activity, FileText
+  LogOut, Loader2, X, Brain, Menu, Clock, Activity, FileText, Trash2
 } from 'lucide-react'
-import { authApi, ragApi, type UserPublic, type Message } from '@/lib/api'
+import { authApi, ragApi, type UserPublic, type Message, type Conversation } from '@/lib/api'
 import { getToken, clearTokens } from '@/lib/utils'
 import Button from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
@@ -17,6 +17,8 @@ const MODELS = [
   { id: 'qwen/qwen3-32b', label: 'Qwen3' },
   { id: 'groq/compound', label: 'Compound' },
 ]
+
+const LAST_CONV_KEY = 'echoloft_last_conversation_id'
 
 function parseThinking(raw: string): { thinking: string; answer: string; isThinking: boolean } {
   const complete = raw.match(/^<think>([\s\S]*?)<\/think>\s*/i)
@@ -41,6 +43,23 @@ interface DisplayMessage extends Message {
   model?: string
 }
 
+interface ConversationListItem {
+  id: string
+  preview: string
+  messageCount: number
+  updatedAt: number
+}
+
+function toListItem(c: Conversation): ConversationListItem {
+  const lastUser = [...c.messages].reverse().find(m => m.role === 'user')
+  return {
+    id: c.id,
+    preview: lastUser?.content.slice(0, 40) || 'New conversation',
+    messageCount: c.messages.length,
+    updatedAt: c.updated_at ? new Date(c.updated_at).getTime() : new Date(c.created_at).getTime(),
+  }
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState<UserPublic | null>(null)
@@ -52,19 +71,24 @@ export default function DashboardPage() {
   const [files, setFiles] = useState<File[]>([])
   const [streaming, setStreaming] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [loadingConversation, setLoadingConversation] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [conversations, setConversations] = useState<{ id: string; preview: string; messageCount: number; updatedAt: number }[]>([])
+  const [conversations, setConversations] = useState<ConversationListItem[]>([])
   const [expandedThinking, setExpandedThinking] = useState<number[]>([])
-  const [sessionStart] = useState(Date.now())
   const bottomRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const requestStartRef = useRef<number>(0)
 
+  // Auth check, then load everything from the backend
   useEffect(() => {
     if (!getToken()) { router.push('/auth/login'); return }
     authApi.profile()
-      .then(u => { setUser(u); setLoading(false) })
+      .then(async u => {
+        setUser(u)
+        await loadConversations()
+        setLoading(false)
+      })
       .catch(() => { clearTokens(); router.push('/auth/login') })
   }, [])
 
@@ -80,7 +104,46 @@ export default function DashboardPage() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Derived session stats
+  // Pull the full conversation list from the DB, then restore whichever
+  // conversation was open before the last refresh (if it still exists)
+  const loadConversations = async () => {
+    try {
+      const convos = await ragApi.listConversations()
+      const items = convos
+        .map(toListItem)
+        .sort((a, b) => b.updatedAt - a.updatedAt)
+      setConversations(items)
+
+      const lastId = typeof window !== 'undefined' ? localStorage.getItem(LAST_CONV_KEY) : null
+      const target = lastId && items.some(i => i.id === lastId) ? lastId : items[0]?.id
+
+      if (target) {
+        await openConversation(target)
+      }
+    } catch {
+      // No conversations yet, or list endpoint unavailable — start fresh
+      setConversations([])
+    }
+  }
+
+  // Fetch one conversation's full message history and hydrate the view
+  const openConversation = async (id: string) => {
+    setLoadingConversation(true)
+    try {
+      const convo = await ragApi.getConversation(id)
+      setConvId(id)
+      setMessages(convo.messages.map(m => ({ ...m })))
+      localStorage.setItem(LAST_CONV_KEY, id)
+    } catch {
+      // Conversation may have been deleted server-side — drop it locally
+      setConversations(prev => prev.filter(c => c.id !== id))
+      if (convId === id) { setConvId(null); setMessages([]) }
+    } finally {
+      setLoadingConversation(false)
+      setSidebarOpen(false)
+    }
+  }
+
   const totalMessages = messages.filter(m => m.role === 'user').length
   const assistantMessages = messages.filter(m => m.role === 'assistant' && m.latencyMs)
   const avgLatency = assistantMessages.length
@@ -93,14 +156,31 @@ export default function DashboardPage() {
     setConvId(conversation_id)
     setMessages([])
     setConversations(prev => [{ id: conversation_id, preview: 'New conversation', messageCount: 0, updatedAt: Date.now() }, ...prev])
+    localStorage.setItem(LAST_CONV_KEY, conversation_id)
     setSidebarOpen(false)
     return conversation_id
+  }
+
+  const deleteConversation = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    try {
+      await ragApi.deleteConversation(id)
+    } catch {
+      // best-effort — still remove locally so UI doesn't get stuck
+    }
+    setConversations(prev => prev.filter(c => c.id !== id))
+    if (convId === id) {
+      setConvId(null)
+      setMessages([])
+      localStorage.removeItem(LAST_CONV_KEY)
+    }
   }
 
   const logout = async () => {
     const rt = localStorage.getItem('refresh_token')
     if (rt) await authApi.logout(rt).catch(() => {})
     clearTokens()
+    localStorage.removeItem(LAST_CONV_KEY)
     router.push('/')
   }
 
@@ -152,9 +232,17 @@ export default function DashboardPage() {
         }
         return updated
       })
-      setConversations(prev => prev.map(c => c.id === cid
-        ? { ...c, preview: sentInput.slice(0, 40), messageCount: c.messageCount + 2, updatedAt: Date.now() }
-        : c))
+      setConversations(prev => {
+        const existing = prev.find(c => c.id === cid)
+        const updatedItem: ConversationListItem = {
+          id: cid!,
+          preview: sentInput.slice(0, 40),
+          messageCount: (existing?.messageCount || 0) + 2,
+          updatedAt: Date.now(),
+        }
+        const rest = prev.filter(c => c.id !== cid)
+        return [updatedItem, ...rest]
+      })
       setFiles([])
     } catch {
       setMessages(prev => {
@@ -193,7 +281,7 @@ export default function DashboardPage() {
         />
       )}
 
-      {/* Sidebar — always visible on desktop, slides on mobile */}
+      {/* Sidebar */}
       <aside className={cn(
         'flex flex-col border-r border-[var(--border)] bg-bg-2 shrink-0 z-30 overflow-hidden',
         'fixed md:relative inset-y-0 left-0 w-72 md:w-64',
@@ -223,7 +311,7 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        {/* Conversation list */}
+        {/* Conversation list — loaded from the database on mount */}
         <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-1">
           {conversations.length === 0 ? (
             <p className="text-xs text-text-muted font-dm text-center py-8 px-4">No conversations yet.</p>
@@ -231,15 +319,15 @@ export default function DashboardPage() {
             conversations.map(c => (
               <button
                 key={c.id}
-                onClick={() => { setConvId(c.id); setSidebarOpen(false) }}
+                onClick={() => openConversation(c.id)}
                 className={cn(
-                  'w-full text-left px-3 py-2.5 rounded-xl text-sm font-dm transition-all',
+                  'group w-full text-left px-3 py-2.5 rounded-xl text-sm font-dm transition-all relative',
                   convId === c.id
                     ? 'bg-accent/10 text-accent border border-accent/20'
                     : 'text-text-secondary hover:bg-surface hover:text-text-primary'
                 )}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 pr-6">
                   <MessageSquare size={13} className="shrink-0" />
                   <span className="truncate flex-1">{c.preview}</span>
                 </div>
@@ -248,12 +336,18 @@ export default function DashboardPage() {
                   <span className="text-[10px] text-text-muted">·</span>
                   <span className="text-[10px] text-text-muted font-mono">{formatTime(c.updatedAt)}</span>
                 </div>
+                <span
+                  onClick={(e) => deleteConversation(c.id, e)}
+                  className="absolute top-2.5 right-2.5 p-1 rounded-md text-text-muted opacity-0 group-hover:opacity-100 hover:text-red-400 hover:bg-red-400/10 transition-all"
+                  title="Delete conversation"
+                >
+                  <Trash2 size={12} />
+                </span>
               </button>
             ))
           )}
         </div>
 
-        {/* Session stats panel */}
         <div className="px-3 py-3 border-t border-[var(--border)] shrink-0">
           <p className="text-[10px] font-dm font-semibold text-text-muted uppercase tracking-widest mb-2.5 px-1">Session</p>
           <div className="grid grid-cols-3 gap-1.5">
@@ -272,7 +366,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* User info */}
         <div className="p-3 border-t border-[var(--border)] shrink-0">
           <div className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-surface transition-colors group">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-white font-syne font-bold text-xs shrink-0">
@@ -296,7 +389,6 @@ export default function DashboardPage() {
       {/* Main chat area */}
       <div className="flex-1 flex flex-col min-w-0 w-full">
 
-        {/* Topbar */}
         <header className="border-b border-[var(--border)] bg-bg-2/50 backdrop-blur shrink-0">
           <div className="h-14 flex items-center gap-2 px-3">
             <button
@@ -351,7 +443,6 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Live stats strip */}
           {messages.length > 0 && (
             <div className="flex items-center gap-4 px-4 pb-2 -mt-1">
               <span className="flex items-center gap-1 text-[10px] font-mono text-text-muted">
@@ -371,7 +462,11 @@ export default function DashboardPage() {
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
-          {messages.length === 0 ? (
+          {loadingConversation ? (
+            <div className="h-full flex items-center justify-center">
+              <Loader2 size={24} className="text-accent animate-spin" />
+            </div>
+          ) : messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center gap-4 text-center max-w-lg mx-auto px-4">
               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-accent/15 border border-accent/25 flex items-center justify-center">
                 <Zap size={24} className="text-accent" />
@@ -457,7 +552,6 @@ export default function DashboardPage() {
                       ) : msg.content}
                     </div>
 
-                    {/* Metadata row */}
                     {(msg.timestamp || msg.latencyMs) && (
                       <div className={cn('flex items-center gap-2 px-1', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
                         {msg.timestamp && (
@@ -485,7 +579,6 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Files strip */}
         {files.length > 0 && (
           <div className="px-3 pb-2 pt-2 flex gap-2 flex-wrap border-t border-[var(--border-2)]">
             {files.map((f, i) => (
@@ -505,7 +598,6 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Input bar */}
         <div className="p-3 sm:p-4 border-t border-[var(--border)] bg-bg-2/50 backdrop-blur shrink-0">
           <div className="max-w-3xl mx-auto flex items-end gap-2 sm:gap-3">
             <div className="flex-1 bg-surface border border-[var(--border)] rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 focus-within:border-accent/50 transition-colors min-w-0">
