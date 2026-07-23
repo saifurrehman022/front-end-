@@ -36,6 +36,7 @@ export interface Conversation {
   user_id: string
   messages: Message[]
   created_at: string
+  updated_at?: string
 }
 
 const authHeader = () => ({
@@ -103,12 +104,29 @@ export const ragApi = {
     return res.json()
   },
 
+  // NEW — fetches every conversation belonging to the logged-in user
+  async listConversations(): Promise<Conversation[]> {
+    const res = await fetch(`${API_BASE}/rag/conversations`, {
+      headers: authHeader() as HeadersInit,
+    })
+    if (!res.ok) throw await res.json()
+    return res.json()
+  },
+
   async getConversation(id: string): Promise<Conversation> {
     const res = await fetch(`${API_BASE}/rag/conversations/${id}`, {
       headers: authHeader() as HeadersInit,
     })
     if (!res.ok) throw await res.json()
     return res.json()
+  },
+
+  async deleteConversation(id: string): Promise<void> {
+    const res = await fetch(`${API_BASE}/rag/conversations/${id}`, {
+      method: 'DELETE',
+      headers: authHeader() as HeadersInit,
+    })
+    if (!res.ok) throw await res.json()
   },
 
   async sendMessage(
