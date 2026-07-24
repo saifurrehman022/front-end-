@@ -104,7 +104,6 @@ export const ragApi = {
     return res.json()
   },
 
-  // NEW — fetches every conversation belonging to the logged-in user
   async listConversations(): Promise<Conversation[]> {
     const res = await fetch(`${API_BASE}/rag/conversations`, {
       headers: authHeader() as HeadersInit,
@@ -148,5 +147,39 @@ export const ragApi = {
     })
     if (!res.ok) throw await res.json()
     return res.body!
+  },
+}
+
+export const audioApi = {
+  async textToSpeech(
+    text: string,
+    model: string = 'canopylabs/orpheus-v1-english',
+    voice: string = 'troy'
+  ): Promise<Blob> {
+    const form = new FormData()
+    form.append('text', text)
+    form.append('model', model)
+    form.append('voice', voice)
+    const res = await fetch(`${API_BASE}/rag/speech`, {
+      method: 'POST',
+      headers: authHeader() as HeadersInit,
+      body: form,
+    })
+    if (!res.ok) throw await res.json()
+    return res.blob()
+  },
+
+  async transcribe(audioBlob: Blob, model: string = 'whisper-large-v3'): Promise<string> {
+    const form = new FormData()
+    form.append('audio', audioBlob, 'recording.webm')
+    form.append('model', model)
+    const res = await fetch(`${API_BASE}/rag/transcribe`, {
+      method: 'POST',
+      headers: authHeader() as HeadersInit,
+      body: form,
+    })
+    if (!res.ok) throw await res.json()
+    const data = await res.json()
+    return data.text
   },
 }
