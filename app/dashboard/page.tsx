@@ -3,25 +3,30 @@ import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   MessageSquare, Plus, Send, Upload, Globe, Zap,
-  LogOut, Loader2, X, Brain, Menu, Clock, Activity, FileText, Trash2
+  LogOut, Loader2, X, Brain, Menu, Clock, Activity, FileText, Trash2,
+  Volume2, Mic, Square
 } from 'lucide-react'
-import { authApi, ragApi, type UserPublic, type Message, type Conversation } from '@/lib/api'
+import { authApi, ragApi, audioApi, type UserPublic, type Message, type Conversation } from '@/lib/api'
 import { getToken, clearTokens } from '@/lib/utils'
 import Button from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
 
 const MODELS = [
   { id: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B' },
- 
-    { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B' },
-   { id: 'groq/compound', label: 'Compound' },
+  { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B' },
+  { id: 'groq/compound', label: 'Compound' },
   { id: 'groq/compound-mini', label: 'Compound Mini' },
   { id: 'openai/gpt-oss-120b', label: 'GPT-OSS 120B' },
- { id: 'openai/gpt-oss-20b', label: 'GPT-OSS 20B' },
+  { id: 'openai/gpt-oss-20b', label: 'GPT-OSS 20B' },
   { id: 'qwen/qwen3.6-27b', label: 'Qwen 3.6 27B' },
+      { id: 'whisper-large-v3', label: 'whisper-large-v3' },
+    { id: 'whisper-large-v3-turbo', label: 'whisper-large-v3-turbo' },
+    { id: 'canopylabs/orpheus-v1-english', label: 'orpheus-v1-english' },
+     { id: 'canopylabs/orpheus-arabic-saudi', label: 'orpheus-arabic-saudi' },
 ]
 
 const LAST_CONV_KEY = 'echoloft_last_conversation_id'
+const TTS_MAX_CHARS = 200
 
 function parseThinking(raw: string): { thinking: string; answer: string; isThinking: boolean } {
   const complete = raw.match(/^<think>([\s\S]*?)<\/think>\s*/i)
@@ -78,12 +83,15 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [conversations, setConversations] = useState<ConversationListItem[]>([])
   const [expandedThinking, setExpandedThinking] = useState<number[]>([])
+  const [speakingIndex, setSpeakingIndex] = useState<number | null>(null)
+  const [recording, setRecording] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const requestStartRef = useRef<number>(0)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
 
-  // Auth check, then load everything from the backend
   useEffect(() => {
     if (!getToken()) { router.push('/auth/login'); return }
     authApi.profile()
@@ -107,14 +115,10 @@ export default function DashboardPage() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Pull the full conversation list from the DB, then restore whichever
-  // conversation was open before the last refresh (if it still exists)
   const loadConversations = async () => {
     try {
       const convos = await ragApi.listConversations()
-      const items = convos
-        .map(toListItem)
-        .sort((a, b) => b.updatedAt - a.updatedAt)
+      const items = convos.map(toListItem).sort((a, b) => b.updatedAt - a.updatedAt)
       setConversations(items)
 
       const lastId = typeof window !== 'undefined' ? localStorage.getItem(LAST_CONV_KEY) : null
@@ -124,12 +128,38 @@ export default function DashboardPage() {
         await openConversation(target)
       }
     } catch {
-      // No conversations yet, or list endpoint unavailable — start fresh
       setConversations([])
     }
   }
+ export const audioApi = {
+  async textToSpeech(text: string, model = 'canopylabs/orpheus-v1-english', voice = 'troy'): Promise<Blob> {
+    const form = new FormData()
+    form.append('text', text)
+    form.append('model', model)
+    form.append('voice', voice)
+    const res = await fetch(`${API_BASE}/rag/speech`, {
+      method: 'POST',
+      headers: authHeader() as HeadersInit,
+      body: form,
+    })
+    if (!res.ok) throw await res.json()
+    return res.blob()
+  },
 
-  // Fetch one conversation's full message history and hydrate the view
+  async transcribe(audioBlob: Blob, model = 'whisper-large-v3'): Promise<string> {
+    const form = new FormData()
+    form.append('audio', audioBlob, 'recording.webm')
+    form.append('model', model)
+    const res = await fetch(`${API_BASE}/rag/transcribe`, {
+      method: 'POST',
+      headers: authHeader() as HeadersInit,
+      body: form,
+    })
+    if (!res.ok) throw await res.json()
+    const data = await res.json()
+    return data.text
+  },
+}
   const openConversation = async (id: string) => {
     setLoadingConversation(true)
     try {
@@ -138,7 +168,6 @@ export default function DashboardPage() {
       setMessages(convo.messages.map(m => ({ ...m })))
       localStorage.setItem(LAST_CONV_KEY, id)
     } catch {
-      // Conversation may have been deleted server-side — drop it locally
       setConversations(prev => prev.filter(c => c.id !== id))
       if (convId === id) { setConvId(null); setMessages([]) }
     } finally {
@@ -266,6 +295,52 @@ export default function DashboardPage() {
     setExpandedThinking(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i])
   }
 
+  const speak = async (text: string, index: number) => {
+    if (speakingIndex !== null) return
+    setSpeakingIndex(index)
+    try {
+      const trimmed = text.length > TTS_MAX_CHARS ? text.slice(0, TTS_MAX_CHARS - 3) + '...' : text
+      const blob = await audioApi.textToSpeech(trimmed)
+      const url = URL.createObjectURL(blob)
+      const audio = new Audio(url)
+      audio.onended = () => { setSpeakingIndex(null); URL.revokeObjectURL(url) }
+      audio.onerror = () => { setSpeakingIndex(null); URL.revokeObjectURL(url) }
+      await audio.play()
+    } catch {
+      setSpeakingIndex(null)
+    }
+  }
+
+  const toggleRecording = async () => {
+    if (recording) {
+      mediaRecorderRef.current?.stop()
+      setRecording(false)
+      return
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const recorder = new MediaRecorder(stream)
+      audioChunksRef.current = []
+      recorder.ondataavailable = (e) => audioChunksRef.current.push(e.data)
+      recorder.onstop = async () => {
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+        stream.getTracks().forEach(t => t.stop())
+        try {
+          const text = await audioApi.transcribe(blob)
+          setInput(prev => prev ? `${prev} ${text}` : text)
+        } catch {
+          // transcription failed — silently drop, input stays as-is
+        }
+      }
+      mediaRecorderRef.current = recorder
+      recorder.start()
+      setRecording(true)
+    } catch {
+      // mic permission denied or unavailable — stay in non-recording state
+      setRecording(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bg">
@@ -314,7 +389,6 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        {/* Conversation list — loaded from the database on mount */}
         <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-1">
           {conversations.length === 0 ? (
             <p className="text-xs text-text-muted font-dm text-center py-8 px-4">No conversations yet.</p>
@@ -444,6 +518,19 @@ export default function DashboardPage() {
               className="hidden"
               onChange={e => setFiles(Array.from(e.target.files || []))}
             />
+
+            <button
+              onClick={toggleRecording}
+              className={cn(
+                'flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-dm border transition-all shrink-0',
+                recording
+                  ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                  : 'bg-surface border-[var(--border)] text-text-muted hover:text-text-primary'
+              )}
+              title={recording ? 'Stop recording' : 'Record voice message'}
+            >
+              {recording ? <Square size={13} /> : <Mic size={13} />}
+            </button>
           </div>
 
           {messages.length > 0 && (
@@ -479,7 +566,7 @@ export default function DashboardPage() {
                   How can I help today?
                 </h2>
                 <p className="text-text-secondary font-dm text-sm">
-                  Ask anything, upload documents, or enable web search.
+                  Ask anything, upload documents or images, or record a voice message.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-2 w-full">
@@ -555,8 +642,18 @@ export default function DashboardPage() {
                       ) : msg.content}
                     </div>
 
-                    {(msg.timestamp || msg.latencyMs) && (
+                    {(msg.timestamp || msg.latencyMs || msg.role === 'assistant') && msg.content && (
                       <div className={cn('flex items-center gap-2 px-1', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
+                        {msg.role === 'assistant' && (
+                          <button
+                            onClick={() => speak(msg.content, i)}
+                            disabled={speakingIndex !== null}
+                            className="text-text-muted hover:text-accent transition-colors disabled:opacity-40"
+                            title="Play as audio"
+                          >
+                            <Volume2 size={11} className={cn(speakingIndex === i && 'text-accent animate-pulse')} />
+                          </button>
+                        )}
                         {msg.timestamp && (
                           <span className="text-[10px] font-mono text-text-muted">{formatTime(msg.timestamp)}</span>
                         )}
@@ -598,6 +695,13 @@ export default function DashboardPage() {
                 </button>
               </div>
             ))}
+          </div>
+        )}
+
+        {recording && (
+          <div className="px-3 pb-2 pt-2 flex items-center gap-2 border-t border-[var(--border-2)]">
+            <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+            <span className="text-xs font-dm text-red-400">Recording... tap the mic again to stop and transcribe</span>
           </div>
         )}
 
