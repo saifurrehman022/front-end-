@@ -6,7 +6,7 @@ import {
   LogOut, Loader2, X, Brain, Menu, Clock, Activity, FileText, Trash2,
   Volume2, Mic, Square
 } from 'lucide-react'
-import { authApi, ragApi, audioApi, type UserPublic, type Message, type Conversation } from '@/lib/api'
+import { authApi, ragApi, type UserPublic, type Message, type Conversation } from '@/lib/api'
 import { getToken, clearTokens } from '@/lib/utils'
 import Button from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
@@ -19,14 +19,43 @@ const MODELS = [
   { id: 'openai/gpt-oss-120b', label: 'GPT-OSS 120B' },
   { id: 'openai/gpt-oss-20b', label: 'GPT-OSS 20B' },
   { id: 'qwen/qwen3.6-27b', label: 'Qwen 3.6 27B' },
-      { id: 'whisper-large-v3', label: 'whisper-large-v3' },
-    { id: 'whisper-large-v3-turbo', label: 'whisper-large-v3-turbo' },
-    { id: 'canopylabs/orpheus-v1-english', label: 'orpheus-v1-english' },
-     { id: 'canopylabs/orpheus-arabic-saudi', label: 'orpheus-arabic-saudi' },
+  { id: 'whisper-large-v3', label: 'whisper-large-v3' },
+  { id: 'whisper-large-v3-turbo', label: 'whisper-large-v3-turbo' },
+  { id: 'canopylabs/orpheus-v1-english', label: 'orpheus-v1-english' },
+  { id: 'canopylabs/orpheus-arabic-saudi', label: 'orpheus-arabic-saudi' },
 ]
 
 const LAST_CONV_KEY = 'echoloft_last_conversation_id'
 const TTS_MAX_CHARS = 200
+
+// Placed at module root scope instead of inside the DashboardPage function component
+export const audioApi = {
+  async textToSpeech(text: string, model = 'canopylabs/orpheus-v1-english', voice = 'troy'): Promise<Blob> {
+    const form = new FormData()
+    form.append('text', text)
+    form.append('model', model)
+    form.append('voice', voice)
+    const res = await fetch(`/api/rag/speech`, {
+      method: 'POST',
+      body: form,
+    })
+    if (!res.ok) throw await res.json()
+    return res.blob()
+  },
+
+  async transcribe(audioBlob: Blob, model = 'whisper-large-v3'): Promise<string> {
+    const form = new FormData()
+    form.append('audio', audioBlob, 'recording.webm')
+    form.append('model', model)
+    const res = await fetch(`/api/rag/transcribe`, {
+      method: 'POST',
+      body: form,
+    })
+    if (!res.ok) throw await res.json()
+    const data = await res.json()
+    return data.text
+  },
+}
 
 function parseThinking(raw: string): { thinking: string; answer: string; isThinking: boolean } {
   const complete = raw.match(/^<think>([\s\S]*?)<\/think>\s*/i)
@@ -131,35 +160,7 @@ export default function DashboardPage() {
       setConversations([])
     }
   }
- export const audioApi = {
-  async textToSpeech(text: string, model = 'canopylabs/orpheus-v1-english', voice = 'troy'): Promise<Blob> {
-    const form = new FormData()
-    form.append('text', text)
-    form.append('model', model)
-    form.append('voice', voice)
-    const res = await fetch(`${API_BASE}/rag/speech`, {
-      method: 'POST',
-      headers: authHeader() as HeadersInit,
-      body: form,
-    })
-    if (!res.ok) throw await res.json()
-    return res.blob()
-  },
 
-  async transcribe(audioBlob: Blob, model = 'whisper-large-v3'): Promise<string> {
-    const form = new FormData()
-    form.append('audio', audioBlob, 'recording.webm')
-    form.append('model', model)
-    const res = await fetch(`${API_BASE}/rag/transcribe`, {
-      method: 'POST',
-      headers: authHeader() as HeadersInit,
-      body: form,
-    })
-    if (!res.ok) throw await res.json()
-    const data = await res.json()
-    return data.text
-  },
-}
   const openConversation = async (id: string) => {
     setLoadingConversation(true)
     try {
@@ -198,7 +199,7 @@ export default function DashboardPage() {
     try {
       await ragApi.deleteConversation(id)
     } catch {
-      // best-effort — still remove locally so UI doesn't get stuck
+      // best-effort
     }
     setConversations(prev => prev.filter(c => c.id !== id))
     if (convId === id) {
@@ -329,14 +330,13 @@ export default function DashboardPage() {
           const text = await audioApi.transcribe(blob)
           setInput(prev => prev ? `${prev} ${text}` : text)
         } catch {
-          // transcription failed — silently drop, input stays as-is
+          // transcription failed
         }
       }
       mediaRecorderRef.current = recorder
       recorder.start()
       setRecording(true)
     } catch {
-      // mic permission denied or unavailable — stay in non-recording state
       setRecording(false)
     }
   }
@@ -351,7 +351,6 @@ export default function DashboardPage() {
 
   return (
     <div className="h-screen flex bg-bg overflow-hidden relative">
-
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/60 z-20 md:hidden"
@@ -465,7 +464,6 @@ export default function DashboardPage() {
 
       {/* Main chat area */}
       <div className="flex-1 flex flex-col min-w-0 w-full">
-
         <header className="border-b border-[var(--border)] bg-bg-2/50 backdrop-blur shrink-0">
           <div className="h-14 flex items-center gap-2 px-3">
             <button
