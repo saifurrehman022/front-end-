@@ -6,7 +6,7 @@ import {
   LogOut, Loader2, X, Brain, Menu, Clock, Activity, FileText, Trash2,
   Volume2, Mic, Square
 } from 'lucide-react'
-import { authApi, ragApi, type UserPublic, type Message, type Conversation } from '@/lib/api'
+import { authApi, ragApi, audioApi, type UserPublic, type Message, type Conversation } from '@/lib/api'
 import { getToken, clearTokens } from '@/lib/utils'
 import Button from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
@@ -27,35 +27,6 @@ const MODELS = [
 
 const LAST_CONV_KEY = 'echoloft_last_conversation_id'
 const TTS_MAX_CHARS = 200
-
-// Placed at module root scope instead of inside the DashboardPage function component
-export const audioApi = {
-  async textToSpeech(text: string, model = 'canopylabs/orpheus-v1-english', voice = 'troy'): Promise<Blob> {
-    const form = new FormData()
-    form.append('text', text)
-    form.append('model', model)
-    form.append('voice', voice)
-    const res = await fetch(`/api/rag/speech`, {
-      method: 'POST',
-      body: form,
-    })
-    if (!res.ok) throw await res.json()
-    return res.blob()
-  },
-
-  async transcribe(audioBlob: Blob, model = 'whisper-large-v3'): Promise<string> {
-    const form = new FormData()
-    form.append('audio', audioBlob, 'recording.webm')
-    form.append('model', model)
-    const res = await fetch(`/api/rag/transcribe`, {
-      method: 'POST',
-      body: form,
-    })
-    if (!res.ok) throw await res.json()
-    const data = await res.json()
-    return data.text
-  },
-}
 
 function parseThinking(raw: string): { thinking: string; answer: string; isThinking: boolean } {
   const complete = raw.match(/^<think>([\s\S]*?)<\/think>\s*/i)
