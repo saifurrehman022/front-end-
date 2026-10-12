@@ -10,6 +10,7 @@
 // confidential details are intentionally NOT published here.
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { motion } from "motion/react";
 import {
   Music,
   Menu,
@@ -1191,12 +1192,19 @@ function Pools() {
         </div>
         <div>
           <h3 style={{ fontSize: 20, color: "#fff", fontWeight: 600 }}>What your points depend on</h3>
-          <ul className="factors">
-            {FACTORS.map((f) => (
-              <li key={f}>
+          <ul className="factors" style={{ perspective: 800 }}>
+            {FACTORS.map((f, i) => (
+              <motion.li
+                key={f}
+                initial={{ opacity: 0, rotateX: -70, y: 14 }}
+                whileInView={{ opacity: 1, rotateX: 0, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: i * 0.08, ease: [0.2, 0.7, 0.2, 1] }}
+                style={{ transformOrigin: "50% 0%", transformStyle: "preserve-3d" }}
+              >
                 <Check size={16} strokeWidth={2.6} className="ck" />
                 <span>{f}</span>
-              </li>
+              </motion.li>
             ))}
           </ul>
           <p className="fine">
