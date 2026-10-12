@@ -334,6 +334,29 @@ const CSS = `
   .bb .stage .r-panel { transform: none; }
   .bb .float-chip { transform: none; }
 }
+
+/* sample reel: phone-framed video + waveform, open-source placeholder clip */
+.bb .reels { display: grid; gap: 40px; margin-top: 40px; grid-template-columns: minmax(0,1fr); align-items: center; }
+.bb .reel-phone { justify-self: center; width: 100%; max-width: 260px; aspect-ratio: 9/16; border-radius: 28px;
+  border: 1px solid rgba(255,255,255,.14); background: #000; overflow: hidden; position: relative;
+  box-shadow: 0 30px 80px -20px rgba(0,0,0,.8); }
+.bb .reel-phone video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bb .reel-notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 72px; height: 18px;
+  border-radius: 999px; background: rgba(0,0,0,.55); z-index: 2; }
+.bb .reel-caption { position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 2; color: #fff; }
+.bb .reel-caption .handle { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.bb .reel-caption .sound { margin-top: 4px; font-size: 11.5px; color: #d4d4d8; display: flex; align-items: center; gap: 6px; }
+.bb .reel-tag { position: absolute; top: 14px; right: 14px; z-index: 2; }
+.bb .wave { display: flex; align-items: flex-end; gap: 3px; height: 46px; }
+.bb .wave span { width: 3px; border-radius: 2px; background: var(--lime); opacity: .55; }
+.bb .wave span.on { opacity: 1; }
+.bb .reel-player { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+.bb .reel-play { width: 40px; height: 40px; border-radius: 999px; border: 1px solid rgba(193,255,33,.5); background: rgba(193,255,33,.1);
+  display: grid; place-items: center; color: var(--lime); flex: none; }
+.bb .reel-note { margin-top: 16px; }
+@media (min-width: 768px) {
+  .bb .reels { grid-template-columns: minmax(0,0.8fr) minmax(0,1.2fr); gap: 56px; }
+}
 `;
 
 /* ------------------------------------------------------------------ */
@@ -949,6 +972,7 @@ function LiveLog() {
 /* ------------------------------------------------------------------ */
 
 const LINKS = [
+  ["See it in action", "reel"],
   ["How it works", "how"],
   ["Pools", "pools"],
   ["Verification", "verification"],
@@ -1008,6 +1032,95 @@ const FAQ = [
   ["Do I need to say I'm being paid?", "Follow each platform's rules, including disclosing paid relationships where required. Being paid for using a track can count as a paid partnership. Our terms explain the wording."],
   ["Can I unlink an account or delete mine?", "Yes to both. Unlinking removes the account's tokens and platform data. You can also export or delete your data on request."],
 ];
+
+/* ------------------------------------------------------------------ */
+/* Sample reel: a real, openly-licensed clip standing in for a verified
+   submission, plus an openly-licensed audio track standing in for a
+   Beatback release (swap both for your own media before launch).      */
+/* ------------------------------------------------------------------ */
+
+const SAMPLE_VIDEO_SRC =
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"; // Big Buck Bunny, (c) Blender Foundation, CC BY 3.0
+const SAMPLE_AUDIO_SRC = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; // free sample track, soundhelix.com
+
+function Waveform({ playing }) {
+  const bars = useRef(
+    Array.from({ length: 28 }, (_, i) => 6 + Math.round(18 * Math.abs(Math.sin(i * 1.7))))
+  ).current;
+  return (
+    <div className="wave" aria-hidden="true">
+      {bars.map((h, i) => (
+        <span key={i} className={playing ? "on" : ""} style={{ height: h, animationDelay: `${i * 0.05}s` }} />
+      ))}
+    </div>
+  );
+}
+
+function SampleReel() {
+  const videoRef = useRef(null);
+  const audioRef = useRef(null);
+  const [videoOn, setVideoOn] = useState(false);
+  const [audioOn, setAudioOn] = useState(false);
+
+  const toggleVideo = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) { v.play().catch(() => {}); setVideoOn(true); } else { v.pause(); setVideoOn(false); }
+  };
+  const toggleAudio = () => {
+    const a = audioRef.current;
+    if (!a) return;
+    if (a.paused) { a.play().catch(() => {}); setAudioOn(true); } else { a.pause(); setAudioOn(false); }
+  };
+
+  return (
+    <section id="reel" className="sec">
+      <div className="sec-head">
+        <span className="eyebrow mono">See it in action</span>
+        <h2 className="r-h2">What a <em>verified submission</em> looks like</h2>
+        <p className="sec-sub">
+          Sample clip and sample track shown here are openly licensed stand-ins, not an actual Beatback release — drop in your own catalogue media when this ships.
+        </p>
+      </div>
+      <div className="reels">
+        <div className="reel-phone">
+          <div className="reel-notch" aria-hidden="true" />
+          <span className="reel-tag"><span className="chip verified">Verified</span></span>
+          <video
+            ref={videoRef}
+            src={SAMPLE_VIDEO_SRC}
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            onClick={toggleVideo}
+            aria-label="Sample short-form video, Creative Commons licensed"
+          />
+          <div className="reel-caption">
+            <p className="handle">@maya.edits</p>
+            <p className="sound"><Music size={12} strokeWidth={2.4} /> Original sound · Undertow</p>
+          </div>
+        </div>
+        <div>
+          <h3 style={{ fontSize: 20, color: "#fff", fontWeight: 600 }}>Track audio, for reference</h3>
+          <p className="fine" style={{ marginTop: 8 }}>
+            Verification fingerprints the track's audio and checks it against what's posted. This sample track (SoundHelix, free to use) stands in for a Beatback release.
+          </p>
+          <div className="reel-player">
+            <button type="button" className="reel-play" onClick={toggleAudio} aria-label={audioOn ? "Pause sample track" : "Play sample track"}>
+              {audioOn ? <Clock size={16} strokeWidth={2.4} /> : <ArrowRight size={16} strokeWidth={2.4} />}
+            </button>
+            <Waveform playing={audioOn} />
+          </div>
+          <audio ref={audioRef} src={SAMPLE_AUDIO_SRC} preload="metadata" onEnded={() => setAudioOn(false)} />
+          <p className="reel-note fine">
+            Open-source credits: sample video is Big Buck Bunny (Blender Foundation, CC BY 3.0). Sample audio is a free SoundHelix demo track.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function HowItWorks() {
   return (
@@ -1458,6 +1571,8 @@ export default function BeatbackLanding() {
             </div>
           </section>
 
+          <hr className="divider" />
+          <SampleReel />
           <hr className="divider" />
           <HowItWorks />
           <hr className="divider" />
