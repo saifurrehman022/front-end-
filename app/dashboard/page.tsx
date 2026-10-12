@@ -1,3 +1,4 @@
+'use client'
 // Beatback: public landing site (dark, lime accent) with a live, cursor-reactive particle-wave hero.
 // Single-file React component. Requires only: react and lucide-react.
 // All styling is self-contained in the <style> block below (no Tailwind setup needed).
