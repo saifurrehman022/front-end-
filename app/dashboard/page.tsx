@@ -368,6 +368,7 @@ function makeSprite() {
   const c = document.createElement("canvas");
   c.width = c.height = 64;
   const g = c.getContext("2d");
+  if (!g) return c;
   const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
   grad.addColorStop(0, "rgba(240,255,190,1)");
   grad.addColorStop(0.16, "rgba(193,255,33,0.95)");
@@ -379,11 +380,13 @@ function makeSprite() {
 }
 
 function Particles2D() {
-  const ref = useRef(null);
+  const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = ref.current;
+    if (!canvas) return undefined;
     const ctx = canvas.getContext("2d");
+    if (!ctx) return undefined;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     const sprite = makeSprite();
     const TAU = Math.PI * 2;
@@ -613,11 +616,12 @@ void main() {
 }
 `;
 
-function ParticlesGL({ onFail }) {
-  const ref = useRef(null);
+function ParticlesGL({ onFail }: { onFail: () => void }) {
+  const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = ref.current;
+    if (!canvas) return undefined;
     let renderer;
     try {
       if (!THREE || !THREE.WebGLRenderer) throw new Error("three.js not available");
@@ -786,7 +790,7 @@ function ParticleBackground() {
 }
 
 /* Tilts the dashboard panel in 3D toward the cursor (fine pointers only) */
-function useTilt(ref) {
+function useTilt(ref: React.RefObject<HTMLElement | null>) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return undefined;
@@ -1058,8 +1062,8 @@ function Waveform({ playing }) {
 }
 
 function SampleReel() {
-  const videoRef = useRef(null);
-  const audioRef = useRef(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [videoOn, setVideoOn] = useState(false);
   const [audioOn, setAudioOn] = useState(false);
 
@@ -1411,7 +1415,7 @@ function StatusPill() {
 
 export default function BeatbackLanding() {
   const [open, setOpen] = useState(false);
-  const stageRef = useRef(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   useTilt(stageRef);
 
   // cursor spotlight on cards
