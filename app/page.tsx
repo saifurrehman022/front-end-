@@ -1,22 +1,29 @@
+import type { Metadata } from 'next'
 import Hero from '@/components/sections/Hero'
-import TrustStrip from '@/components/sections/TrustStrip'
-import FeaturesGrid from '@/components/sections/FeaturesGrid'
-import ServicesTabs from '@/components/sections/ServicesTabs'
-import StatsCounter from '@/components/sections/StatsCounter'
-import TestimonialsSection from '@/components/sections/TestimonialsSection'
-import TeamSlider from '@/components/sections/TeamSlider'
+import TechMarquee from '@/components/sections/TechMarquee'
+import ServicesGrid from '@/components/sections/ServicesGrid'
+import WorkSection from '@/components/sections/WorkSection'
+import ProcessSection from '@/components/sections/ProcessSection'
+import FaqSection from '@/components/sections/FaqSection'
 import CTASection from '@/components/sections/CTASection'
+import { homeFaqs } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
+import { siteConfig } from '@/lib/site'
+
+export const metadata: Metadata = {
+  ...pageMetadata({ title: siteConfig.title, description: siteConfig.description, path: '/' }),
+  title: { absolute: siteConfig.title },
+}
 
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <TrustStrip />
-      <FeaturesGrid />
-      <ServicesTabs />
-      <StatsCounter />
-      <TestimonialsSection />
-      <TeamSlider />
+      <TechMarquee />
+      <ServicesGrid />
+      <WorkSection />
+      <ProcessSection />
+      <FaqSection faqs={homeFaqs} />
       <CTASection />
     </>
   )
