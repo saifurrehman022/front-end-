@@ -1,33 +1,34 @@
-'use client'
-import { useRouter } from 'next/navigation'
-import { ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { ArrowRight, Mail } from 'lucide-react'
 import Container from '@/components/layout/Container'
+import { Reveal } from '@/components/motion/Motion'
+import { siteConfig } from '@/lib/site'
 
 export default function CTASection() {
-  const router = useRouter()
   return (
-    <section className="bg-black py-32">
+    <section className="py-24">
       <Container>
-        <div className="max-w-3xl mx-auto text-center flex flex-col items-center gap-7">
-          <h2 className="font-syne font-extrabold text-[clamp(42px,6vw,80px)] text-white leading-tight tracking-tight">
-            Ready to build with<br /><span className="text-[#E8C547]">AI you trust?</span>
-          </h2>
-          <p className="text-[17px] text-[#888] font-dm leading-relaxed max-w-md">
-            Join 500+ companies using EchoLoft AI to power intelligent, document-aware chat. Get started free — no credit card needed.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button onClick={() => router.push('/auth/signup')}
-              className="group h-[52px] px-9 bg-[#E8C547] text-black rounded-full text-[15px] font-dm font-bold hover:bg-[#F5D76E] hover:shadow-[0_0_32px_rgba(232,197,71,0.3)] transition-all flex items-center gap-2">
-              Start for free
-              <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button onClick={() => router.push('/contact')}
-              className="h-[52px] px-9 bg-transparent border-[1.5px] border-[#333] text-white rounded-full text-[15px] font-dm font-semibold hover:border-[#666] transition-all">
-              Talk to sales
-            </button>
+        <Reveal>
+          <div className="relative overflow-hidden rounded-[32px] border border-gold/30 px-6 py-16 text-center sm:px-12 sm:py-20">
+            <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(80%_120%_at_50%_0%,rgba(232,180,74,0.22),transparent_60%),radial-gradient(60%_80%_at_80%_100%,rgba(110,231,249,0.12),transparent_60%)]" />
+            <div aria-hidden className="grid-bg absolute inset-0 -z-10 opacity-60" />
+            <p className="eyebrow mb-5 justify-center">Start a project</p>
+            <h2 className="h-display mx-auto max-w-3xl text-[clamp(34px,5.5vw,64px)] leading-[1.02]">
+              Have an AI idea? <span className="text-gradient">Let&apos;s make it real.</span>
+            </h2>
+            <p className="mx-auto mt-5 max-w-xl font-dm text-[17px] leading-relaxed text-fg-2">
+              Tell us what you want to build. You get a clear plan and a fixed quote within days, not weeks.
+            </p>
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link href="/contact" className="btn-primary group">
+                Book a free discovery call <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+              </Link>
+              <a href={`mailto:${siteConfig.email}`} className="btn-ghost">
+                <Mail size={16} /> {siteConfig.email}
+              </a>
+            </div>
           </div>
-          <p className="text-xs text-[#555] font-dm">Free tier · No credit card · Cancel anytime</p>
-        </div>
+        </Reveal>
       </Container>
     </section>
   )

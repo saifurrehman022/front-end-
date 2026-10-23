@@ -1,80 +1,105 @@
+import type { Metadata } from 'next'
+import { Target, Eye, Gauge, ShieldCheck } from 'lucide-react'
 import Container from '@/components/layout/Container'
-import TeamSlider from '@/components/sections/TeamSlider'
+import SectionHeading from '@/components/sections/SectionHeading'
 import CTASection from '@/components/sections/CTASection'
-import { Target, Lightbulb, Heart, Globe } from 'lucide-react'
+import JsonLd from '@/components/seo/JsonLd'
+import { Reveal, TiltCard } from '@/components/motion/Motion'
+import { breadcrumbSchema, pageMetadata } from '@/lib/seo'
+import { team, techStack } from '@/lib/content'
+
+export const metadata: Metadata = pageMetadata({
+  title: 'About EchoLoft AI — AI Engineers Building Production AI Products',
+  description:
+    'EchoLoft AI is a small, senior team of AI engineers. We design, build and deploy RAG systems, AI agents, GPU model APIs and AI SaaS products for startups and businesses worldwide.',
+  path: '/about',
+})
+
+const values = [
+  { icon: Target, title: 'Outcomes over demos', desc: 'We judge success by what runs in production and what it does for your business, not by a slick prototype.' },
+  { icon: Eye, title: 'Radical transparency', desc: 'Fixed scopes, weekly demos and honest advice, including when AI is not the right answer.' },
+  { icon: Gauge, title: 'Built to be fast & lean', desc: 'Low latency, sensible GPU spend and architectures that scale from zero to real traffic.' },
+  { icon: ShieldCheck, title: 'Secure by default', desc: 'Proper auth, least-privilege access and your data kept in your own infrastructure wherever possible.' },
+]
 
 export default function AboutPage() {
-  const values = [
-    {icon:<Target size={20}/>,title:'Precision',desc:"Every response grounded in your actual data — not guesses. We're building a platform you can bet your business on."},
-    {icon:<Lightbulb size={20}/>,title:'Transparency',desc:'Open model selection, structured logging, and full audit trails. You always know what the AI is doing and why.'},
-    {icon:<Heart size={20}/>,title:'Empathy',desc:'We design for the people who use AI daily — not just the engineers who deploy it. Simplicity is a feature.'},
-    {icon:<Globe size={20}/>,title:'Accessibility',desc:"Enterprise-grade AI shouldn't require enterprise-grade budgets. We're democratizing intelligent document chat."},
-  ]
   return (
-    <div className="bg-[#f5f8f5] pt-20">
-      <div className="h-[3px] bg-[#C89A2E]" />
-      {/* Hero */}
-      <section className="py-24 border-b border-[#cfdfcf]">
+    <>
+      <JsonLd data={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }])} />
+      <section className="relative overflow-hidden pb-20 pt-40">
+        <div aria-hidden className="grid-bg absolute inset-0 -z-10" />
+        <div aria-hidden className="absolute left-[-10%] top-20 -z-10 h-[420px] w-[420px] rounded-full bg-cyan/10 blur-[120px]" />
         <Container>
-          <p className="eyebrow font-dm mb-5">Our story</p>
-          <h1 className="font-syne font-extrabold text-[clamp(48px,7vw,88px)] text-black leading-tight tracking-tight mb-7">
-            We believe AI should<br /><span className="text-[#7c8a7c]">work for everyone.</span>
-          </h1>
-          <p className="text-[#4a564a] font-dm text-xl max-w-2xl leading-relaxed">
-            EchoLoft was born from a simple frustration: enterprise AI tools were either too expensive, too opaque, or too unreliable. We built what we wished existed.
-          </p>
+          <SectionHeading
+            as="h1"
+            eyebrow="About us"
+            title="Engineers who build AI"
+            accent="for the real world."
+            sub="EchoLoft AI started from a simple frustration: too many AI projects stall between a promising demo and a product people can use. We close that gap, from GPU infrastructure and model pipelines to the app your users touch."
+          />
         </Container>
       </section>
 
-      {/* Mission */}
-      <section className="py-24 border-b border-[#cfdfcf]">
+      <section className="section border-t border-line">
         <Container>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div>
-              <p className="eyebrow font-dm mb-5">Mission</p>
-              <h2 className="font-syne font-extrabold text-[clamp(36px,5vw,56px)] text-black leading-tight tracking-tight mb-6">
-                Make AI answers as trustworthy<br /><span className="text-[#7c8a7c]">as your data.</span>
-              </h2>
-              <p className="text-[#4a564a] font-dm leading-relaxed mb-4 text-[16px]">
-                Most LLMs hallucinate. EchoLoft's RAG pipeline ensures every response is anchored to the documents you provide. If it's not in your data, the model says so.
-              </p>
-              <p className="text-[#4a564a] font-dm leading-relaxed text-[16px]">
-                We pair this with Groq's lightning-fast inference, a robust auth system built with JWT refresh rotation and Argon2 hashing, and a document-processing engine that handles messy real-world files.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {[{label:'Founded',value:'2024'},{label:'Team Size',value:'18'},{label:'Models Supported',value:'16'},{label:'Countries',value:'34'}].map(s=>(
-                <div key={s.label} className="border border-[#cfdfcf] rounded-2xl p-8 text-center hover:border-black hover:-translate-y-1 transition-all duration-200">
-                  <p className="font-syne font-extrabold text-[42px] text-black leading-none mb-2">{s.value}</p>
-                  <p className="text-xs text-[#7c8a7c] font-dm uppercase tracking-widest">{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Values */}
-      <section className="py-24 border-b border-[#cfdfcf]">
-        <Container>
-          <p className="eyebrow font-dm mb-5">Our values</p>
-          <h2 className="font-syne font-extrabold text-[clamp(36px,5vw,56px)] text-black leading-tight tracking-tight mb-14">
-            Principles that guide<br /><span className="text-[#7c8a7c]">every decision.</span>
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#cfdfcf] border border-[#cfdfcf]">
-            {values.map(v=>(
-              <div key={v.title} className="bg-[#f5f8f5] p-10 hover:bg-[#edf3ed] transition-colors group">
-                <div className="w-10 h-10 rounded-xl bg-[#e2ebe2] flex items-center justify-center text-black mb-6 group-hover:bg-black group-hover:text-white transition-all">{v.icon}</div>
-                <h3 className="font-syne font-bold text-[15px] text-black mb-3 uppercase tracking-wide">{v.title}</h3>
-                <p className="text-sm text-[#4a564a] font-dm leading-relaxed">{v.desc}</p>
-              </div>
+          <SectionHeading eyebrow="What we value" title="Principles behind" accent="every build." />
+          <div className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {values.map((v, i) => (
+              <Reveal key={v.title} delay={i * 0.08}>
+                <TiltCard className="rounded-3xl">
+                  <div className="glass h-full rounded-3xl p-7">
+                    <span className="grid h-11 w-11 place-items-center rounded-2xl bg-gold/10 text-gold">
+                      <v.icon size={20} strokeWidth={1.8} />
+                    </span>
+                    <h3 className="mt-6 font-syne text-lg font-bold text-fg">{v.title}</h3>
+                    <p className="mt-3 font-dm text-[15px] leading-relaxed text-fg-2">{v.desc}</p>
+                  </div>
+                </TiltCard>
+              </Reveal>
             ))}
           </div>
         </Container>
       </section>
 
-      <TeamSlider />
+      <section className="section border-t border-line">
+        <Container>
+          <SectionHeading eyebrow="The team" title="Senior people," accent="hands on the code." />
+          <div className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-2">
+            {team.map((m, i) => (
+              <Reveal key={m.name} delay={i * 0.1}>
+                <article className="glass flex h-full gap-6 rounded-3xl p-8">
+                  <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-gold to-gold-3 font-syne text-xl font-extrabold text-ink">
+                    {m.initials}
+                  </span>
+                  <div>
+                    <h3 className="font-syne text-xl font-bold text-fg">{m.name}</h3>
+                    <p className="mt-1 font-mono text-xs uppercase tracking-[0.14em] text-gold">{m.role}</p>
+                    <p className="mt-4 font-dm text-[15px] leading-relaxed text-fg-2">{m.bio}</p>
+                    <div className="mt-5 flex flex-wrap gap-1.5">
+                      {m.tags.map(t => (
+                        <span key={t} className="rounded-full border border-line px-2.5 py-1 font-mono text-[11px] text-fg-2">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      <section className="section border-t border-line">
+        <Container>
+          <SectionHeading eyebrow="Our stack" title="Tools we use" accent="every day." center />
+          <Reveal className="mx-auto mt-12 flex max-w-4xl flex-wrap justify-center gap-2.5">
+            {techStack.map(t => (
+              <span key={t} className="glass rounded-full px-4 py-2 font-mono text-sm text-fg-2">{t}</span>
+            ))}
+          </Reveal>
+        </Container>
+      </section>
+
       <CTASection />
-    </div>
+    </>
   )
 }

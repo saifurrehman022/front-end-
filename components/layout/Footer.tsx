@@ -1,50 +1,94 @@
 import Link from 'next/link'
-import { Zap, Twitter, Github, Linkedin, Mail } from 'lucide-react'
+import { Github, Linkedin, Mail, Twitter, ArrowUpRight } from 'lucide-react'
 import Container from './Container'
-
-const cols = [
-  { title: 'Company',   links: [{l:'About Us',h:'/about'},{l:'Careers',h:'/careers'},{l:'Blog',h:'/blog'},{l:'Contact',h:'/contact'}] },
-  { title: 'Solutions', links: [{l:'RAG Chat',h:'/services#rag'},{l:'AI Consulting',h:'/services#consulting'},{l:'AI Audit',h:'/services#audit'},{l:'Enterprise API',h:'/services#api'}] },
-  { title: 'Resources', links: [{l:'Documentation',h:'/docs'},{l:'API Reference',h:'/docs/api'},{l:'Changelog',h:'/changelog'},{l:'Status',h:'/status'}] },
-  { title: 'Legal',     links: [{l:'Privacy Policy',h:'/legal/privacy'},{l:'Terms of Service',h:'/legal/terms'},{l:'Cookies',h:'/legal/cookies'},{l:'Security',h:'/security'}] },
-]
+import Logo from './Logo'
+import { siteConfig } from '@/lib/site'
+import { services } from '@/lib/services'
 
 export default function Footer() {
+  const socials = [
+    { href: siteConfig.socials.github, label: 'GitHub', icon: <Github size={15} /> },
+    { href: siteConfig.socials.linkedin, label: 'LinkedIn', icon: <Linkedin size={15} /> },
+    { href: siteConfig.socials.x, label: 'X / Twitter', icon: <Twitter size={15} /> },
+    { href: `mailto:${siteConfig.email}`, label: 'Email', icon: <Mail size={15} /> },
+  ].filter(s => s.href)
+
   return (
-    <footer className="bg-[#f5f8f5] border-t border-[#cfdfcf]">
+    <footer className="relative border-t border-line bg-ink-2">
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
       <Container className="py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 mb-14">
-          {/* Brand */}
-          <div className="lg:col-span-1 flex flex-col gap-5">
-            <Link href="/" className="flex items-center gap-2.5 w-fit">
-              <div className="w-8 h-8 rounded-xl bg-black flex items-center justify-center">
-                <Zap size={15} className="text-[#C89A2E]" fill="#C89A2E" />
-              </div>
-              <span className="font-syne font-bold text-[17px] text-black">EchoLoft<span className="text-[#7c8a7c] text-xs font-dm ml-0.5">AI</span></span>
-            </Link>
-            <p className="text-sm text-[#4a564a] font-dm leading-relaxed">Intelligent RAG-powered chat for modern enterprises. Build smarter workflows with AI.</p>
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+          <div className="flex flex-col gap-5">
+            <Logo />
+            <p className="max-w-xs font-dm text-sm leading-relaxed text-fg-2">
+              AI development agency building RAG chatbots, AI agents, GPU model deployments and AI SaaS products, from first call to production.
+            </p>
             <div className="flex gap-2">
-              {[{icon:<Twitter size={14}/>,h:'#'},{icon:<Github size={14}/>,h:'#'},{icon:<Linkedin size={14}/>,h:'#'},{icon:<Mail size={14}/>,h:'/contact'}].map((s,i)=>(
-                <a key={i} href={s.h} className="w-9 h-9 rounded-full bg-[#edf3ed] border border-[#cfdfcf] flex items-center justify-center text-[#7c8a7c] hover:text-black hover:border-black transition-all">{s.icon}</a>
+              {socials.map(s => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  aria-label={s.label}
+                  target={s.href.startsWith('http') ? '_blank' : undefined}
+                  rel={s.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  className="grid h-9 w-9 place-items-center rounded-full border border-line-2 text-fg-2 transition-colors hover:border-gold/60 hover:text-gold"
+                >
+                  {s.icon}
+                </a>
               ))}
             </div>
           </div>
-          {cols.map(col => (
-            <div key={col.title} className="flex flex-col gap-4">
-              <h4 className="font-dm font-semibold text-[11px] text-[#7c8a7c] uppercase tracking-[0.18em]">{col.title}</h4>
-              <ul className="flex flex-col gap-2.5">
-                {col.links.map(link => (
-                  <li key={link.h}><Link href={link.h} className="text-[14px] text-[#4a564a] hover:text-black font-dm transition-colors">{link.l}</Link></li>
-                ))}
-              </ul>
-            </div>
-          ))}
+
+          <div>
+            <h2 className="mb-4 font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-fg-3">Services</h2>
+            <ul className="flex flex-col gap-2.5">
+              {services.map(s => (
+                <li key={s.slug}>
+                  <Link href={`/services/${s.slug}`} className="font-dm text-sm text-fg-2 transition-colors hover:text-fg">
+                    {s.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="mb-4 font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-fg-3">Company</h2>
+            <ul className="flex flex-col gap-2.5">
+              {[
+                { l: 'About', h: '/about' },
+                { l: 'Selected work', h: '/#work' },
+                { l: 'Process', h: '/#process' },
+                { l: 'Contact', h: '/contact' },
+                { l: 'Client login', h: '/auth/login' },
+              ].map(i => (
+                <li key={i.h}>
+                  <Link href={i.h} className="font-dm text-sm text-fg-2 transition-colors hover:text-fg">
+                    {i.l}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="mb-4 font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-fg-3">Start a project</h2>
+            <a href={`mailto:${siteConfig.email}`} className="font-dm text-sm text-fg transition-colors hover:text-gold">
+              {siteConfig.email}
+            </a>
+            <p className="mt-2 font-dm text-sm text-fg-3">{siteConfig.responseTime}</p>
+            <Link href="/contact" className="mt-5 inline-flex items-center gap-1.5 font-dm text-sm font-semibold text-gold hover:text-gold-2">
+              Get a fixed quote <ArrowUpRight size={14} />
+            </Link>
+          </div>
         </div>
-        <div className="pt-8 border-t border-[#cfdfcf] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-[#7c8a7c] font-dm">© {new Date().getFullYear()} EchoLoft AI. All rights reserved.</p>
-          <div className="flex items-center gap-2">
-            <span className="status-dot" />
-            <span className="text-xs text-[#7c8a7c] font-dm">All systems operational</span>
+
+        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-line pt-8 sm:flex-row">
+          <p className="font-dm text-xs text-fg-3">© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
+          <div className="flex items-center gap-5 font-dm text-xs text-fg-3">
+            <Link href="/legal/privacy" className="hover:text-fg">Privacy</Link>
+            <Link href="/legal/terms" className="hover:text-fg">Terms</Link>
+            <span className="flex items-center gap-2"><span className="status-dot" /> Taking new projects</span>
           </div>
         </div>
       </Container>

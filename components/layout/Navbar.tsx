@@ -1,99 +1,92 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { Menu, X, ArrowUpRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Menu, X, Zap } from 'lucide-react'
-import { getToken, clearTokens } from '@/lib/utils'
-
-const links = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/services', label: 'Services' },
-  { href: '/contact', label: 'Contact' },
-]
+import { siteConfig } from '@/lib/site'
+import Logo from './Logo'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
-  const [loggedIn, setLoggedIn] = useState(false)
   const pathname = usePathname()
-  const router = useRouter()
 
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', fn)
+    const fn = () => setScrolled(window.scrollY > 12)
+    fn()
+    window.addEventListener('scroll', fn, { passive: true })
     return () => window.removeEventListener('scroll', fn)
   }, [])
 
-  useEffect(() => { setLoggedIn(!!getToken()) }, [pathname])
+  useEffect(() => setOpen(false), [pathname])
 
-  const handleLogout = () => { clearTokens(); setLoggedIn(false); router.push('/') }
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : !href.includes('#') && pathname.startsWith(href))
 
   return (
-    <header className={cn('fixed top-0 left-0 right-0 z-50 transition-all duration-300', scrolled ? 'nav-scrolled' : 'bg-transparent')}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-xl bg-black flex items-center justify-center group-hover:bg-[#1e1e1e] transition-colors">
-              <Zap size={15} className="text-[#C89A2E]" fill="#C89A2E" />
-            </div>
-            <span className="font-syne font-bold text-[17px] text-black tracking-tight">
-              Echo<span className="text-black">Loft</span><span className="text-[#7c8a7c] text-xs font-dm ml-0.5">AI</span>
-            </span>
+    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
+      <div
+        className={cn(
+          'mx-auto flex h-16 max-w-site items-center justify-between rounded-full px-4 pl-5 transition-all duration-500',
+          scrolled || open ? 'glass shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]' : 'border border-transparent',
+        )}
+      >
+        <Logo />
+
+        <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
+          {siteConfig.nav.map(l => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className={cn(
+                'rounded-full px-4 py-2 font-dm text-sm font-medium transition-colors',
+                isActive(l.href) ? 'bg-white/[0.08] text-fg' : 'text-fg-2 hover:text-fg',
+              )}
+            >
+              {l.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="hidden items-center gap-2 lg:flex">
+          <Link href="/contact" className="btn-primary h-10 px-5 text-sm">
+            Book a free call <ArrowUpRight size={15} />
           </Link>
-
-          <nav className="hidden lg:flex items-center gap-1">
-            {links.map(l => (
-              <Link key={l.href} href={l.href} className={cn(
-                'px-4 py-2 rounded-full text-sm font-dm font-medium transition-all duration-150',
-                pathname === l.href ? 'text-black bg-[#e2ebe2]' : 'text-[#4a564a] hover:text-black hover:bg-[#edf3ed]'
-              )}>{l.label}</Link>
-            ))}
-          </nav>
-
-          <div className="hidden lg:flex items-center gap-3">
-            {loggedIn ? (
-              <>
-                <button onClick={() => router.push('/dashboard')} className="text-sm font-dm font-medium text-[#4a564a] hover:text-black transition-colors">Dashboard</button>
-                <button onClick={handleLogout} className="h-9 px-5 bg-black text-white rounded-full text-sm font-dm font-semibold hover:bg-[#1e1e1e] transition-colors">Sign Out</button>
-              </>
-            ) : (
-              <>
-                <button onClick={() => router.push('/auth/login')} className="text-sm font-dm font-medium text-[#4a564a] hover:text-black transition-colors">Sign In</button>
-                <button onClick={() => router.push('/auth/signup')} className="h-9 px-5 bg-black text-white rounded-full text-sm font-dm font-semibold hover:bg-[#1e1e1e] transition-colors">Get Started</button>
-              </>
-            )}
-          </div>
-
-          <button className="lg:hidden p-2 rounded-full text-[#4a564a] hover:text-black hover:bg-[#e2ebe2] transition-colors" onClick={() => setOpen(!open)}>
-            {open ? <X size={20}/> : <Menu size={20}/>}
-          </button>
         </div>
+
+        <button
+          type="button"
+          className="grid h-10 w-10 place-items-center rounded-full border border-line-2 text-fg lg:hidden"
+          onClick={() => setOpen(v => !v)}
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-expanded={open}
+          aria-controls="mobile-menu"
+        >
+          {open ? <X size={18} /> : <Menu size={18} />}
+        </button>
       </div>
 
-      <div className={cn('lg:hidden overflow-hidden transition-all duration-300', open ? 'max-h-96' : 'max-h-0')}>
-        <div className="bg-[#f5f8f5] border-t border-[#cfdfcf] px-6 py-4 flex flex-col gap-1">
-          {links.map(l => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
-              className={cn('px-4 py-3 rounded-xl text-sm font-dm font-medium transition-all',
-                pathname === l.href ? 'text-black bg-[#e2ebe2]' : 'text-[#4a564a] hover:text-black hover:bg-[#edf3ed]'
-              )}>{l.label}</Link>
+      <div
+        id="mobile-menu"
+        className={cn(
+          'mx-auto mt-2 max-w-site overflow-hidden rounded-3xl transition-all duration-300 lg:hidden',
+          open ? 'glass max-h-[480px] opacity-100' : 'pointer-events-none max-h-0 opacity-0',
+        )}
+      >
+        <nav aria-label="Mobile" className="flex flex-col gap-1 p-3">
+          {siteConfig.nav.map(l => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className={cn('rounded-2xl px-4 py-3 font-dm text-base', isActive(l.href) ? 'bg-white/[0.08] text-fg' : 'text-fg-2')}
+            >
+              {l.label}
+            </Link>
           ))}
-          <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-[#cfdfcf]">
-            {loggedIn ? (
-              <>
-                <button onClick={() => { router.push('/dashboard'); setOpen(false) }} className="h-11 bg-black text-white rounded-full text-sm font-dm font-semibold">Dashboard</button>
-                <button onClick={handleLogout} className="h-11 border border-[#cfdfcf] text-black rounded-full text-sm font-dm font-medium">Sign Out</button>
-              </>
-            ) : (
-              <>
-                <button onClick={() => { router.push('/auth/signup'); setOpen(false) }} className="h-11 bg-black text-white rounded-full text-sm font-dm font-semibold">Get Started</button>
-                <button onClick={() => { router.push('/auth/login'); setOpen(false) }} className="h-11 border border-[#cfdfcf] text-black rounded-full text-sm font-dm font-medium">Sign In</button>
-              </>
-            )}
-          </div>
-        </div>
+          <Link href="/contact" className="btn-primary mt-2">
+            Book a free call <ArrowUpRight size={15} />
+          </Link>
+        </nav>
       </div>
     </header>
   )

@@ -1,85 +1,64 @@
 'use client'
-import { useRouter } from 'next/navigation'
-import { ArrowRight, Play } from 'lucide-react'
-import { useState } from 'react'
-import Modal from '@/components/ui/Modal'
+import dynamic from 'next/dynamic'
+import Link from 'next/link'
+import { motion, useReducedMotion } from 'motion/react'
+import { ArrowRight, ArrowDown } from 'lucide-react'
+import { SplitHeading } from '@/components/motion/Motion'
+
+// WebGL scene loads after the text so it never delays first paint (good for Core Web Vitals).
+const HeroScene = dynamic(() => import('@/components/three/HeroScene'), { ssr: false })
+
+const chips = ['RAG chatbots', 'AI agents', 'RunPod GPU APIs', 'ComfyUI video', 'AI SaaS MVPs']
 
 export default function Hero() {
-  const router = useRouter()
-  const [videoOpen, setVideoOpen] = useState(false)
+  const reduce = useReducedMotion()
+  const fade = (delay: number) =>
+    reduce ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] as const } }
+
   return (
-    <section className="relative min-h-[100svh] flex flex-col justify-center bg-[#f5f8f5] px-6 pt-24 pb-16">
-      <div className="absolute top-0 left-0 right-0 h-px bg-[#cfdfcf]" />
+    <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden pb-20 pt-32">
+      <div aria-hidden className="grid-bg absolute inset-0 -z-20" />
+      <div aria-hidden className="absolute inset-0 -z-10">
+        <HeroScene />
+      </div>
+      <div aria-hidden className="absolute inset-0 -z-10 bg-ink/60 lg:bg-transparent lg:bg-gradient-to-r lg:from-ink lg:via-ink/50 lg:to-transparent" />
+      <div aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-ink to-transparent" />
 
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-16 items-center">
-        <div>
-          <h1 className="font-syne font-extrabold text-[clamp(44px,6.5vw,84px)] text-black leading-[1.02] tracking-[-0.03em] mb-7 animate-slide-up" style={{animationDelay:'0.1s',opacity:0}}>
-            Answers grounded<br /><span className="text-[#7c8a7c]">in your data.</span>
+      <div className="mx-auto w-full max-w-site px-5 sm:px-8">
+        <div className="max-w-[680px]">
+          <motion.div {...fade(0)} className="glass mb-7 inline-flex items-center gap-2.5 rounded-full px-4 py-1.5 font-dm text-[13px] text-fg-2">
+            <span className="status-dot" />
+            AI development agency · taking new projects
+          </motion.div>
+
+          <h1 className="h-display text-[clamp(42px,7vw,88px)] leading-[0.98]">
+            <SplitHeading text="We build AI that ships to production." highlight={['AI', 'production']} />
           </h1>
-          <p className="text-[17px] text-[#4a564a] font-dm max-w-md leading-relaxed mb-10 animate-slide-up" style={{animationDelay:'0.22s',opacity:0}}>
-            EchoLoft turns your documents into cited, verifiable chat — every answer traces back to a source. No guessing what the model made up.
-          </p>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-16 animate-slide-up" style={{animationDelay:'0.34s',opacity:0}}>
-            <button onClick={() => router.push('/contact')}
-              className="group h-[52px] px-8 bg-black text-white rounded-full text-[15px] font-dm font-semibold hover:bg-[#1e1e1e] transition-colors flex items-center gap-2.5">
-              Request demo
-              <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button onClick={() => setVideoOpen(true)}
-              className="group h-[52px] px-8 bg-transparent border border-[#cfdfcf] text-black rounded-full text-[15px] font-dm font-semibold hover:border-black transition-colors flex items-center gap-3">
-              <div className="w-7 h-7 rounded-full bg-[#e2ebe2] flex items-center justify-center">
-                <Play size={10} fill="black" className="ml-0.5" />
-              </div>
-              Watch video
-            </button>
-          </div>
-          <div className="flex flex-wrap gap-x-14 gap-y-6 pt-8 border-t border-[#cfdfcf] animate-slide-up" style={{animationDelay:'0.46s',opacity:0}}>
-            {[{v:'500+',l:'Companies'},{v:'99.9%',l:'Uptime SLA'},{v:'<200ms',l:'Response time'}].map(s=>(
-              <div key={s.l}>
-                <div className="font-syne font-bold text-[28px] text-black leading-none">{s.v}</div>
-                <div className="text-xs text-[#7c8a7c] font-dm mt-1 uppercase tracking-widest">{s.l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        <div className="animate-slide-up" style={{animationDelay:'0.3s',opacity:0}}>
-          <div className="border border-[#cfdfcf] rounded-2xl bg-[#edf3ed] overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-[#cfdfcf]">
-              <div className="flex gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#cfdfcf]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#cfdfcf]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#cfdfcf]" />
-              </div>
-              <span className="text-xs text-[#7c8a7c] font-mono-data ml-2">Q3_Revenue_Report.pdf</span>
-            </div>
-            <div className="p-6 flex flex-col gap-4">
-              <p className="text-sm text-[#4a564a] font-dm">"What drove the margin increase last quarter?"</p>
-              <div className="bg-[#f5f8f5] border border-[#cfdfcf] rounded-xl p-5">
-                <p className="text-[14px] text-black font-dm leading-relaxed">
-                  Margin improved primarily from vendor renegotiation <span className="cite-mark">1</span> and a 12% drop in fulfillment cost <span className="cite-mark">2</span>.
-                </p>
-                <span className="inline-block w-1.5 h-4 bg-black cursor-blink ml-0.5 align-middle" />
-              </div>
-              <div className="flex flex-col gap-1.5 text-xs font-mono-data text-[#7c8a7c]">
-                <span><span className="cite-mark">1</span> page 4, "Cost Structure"</span>
-                <span><span className="cite-mark">2</span> page 6, "Logistics Summary"</span>
-              </div>
-            </div>
-          </div>
+          <motion.p {...fade(0.55)} className="mt-7 max-w-[540px] font-dm text-[17px] leading-relaxed text-fg-2 sm:text-lg">
+            RAG chatbots on your data, autonomous AI agents, GPU model APIs on RunPod, ComfyUI image and video pipelines, and full-stack AI SaaS.
+            Designed, built and deployed by engineers who run this stack every day.
+          </motion.p>
+
+          <motion.div {...fade(0.7)} className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Link href="/contact" className="btn-primary group">
+              Get a free project quote
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link href="/#work" className="btn-ghost">
+              <ArrowDown size={16} /> See our work
+            </Link>
+          </motion.div>
+
+          <motion.ul {...fade(0.85)} aria-label="What we build" className="mt-12 flex flex-wrap gap-2">
+            {chips.map(c => (
+              <li key={c} className="rounded-full border border-line px-3.5 py-1.5 font-mono text-[12px] text-fg-2">
+                {c}
+              </li>
+            ))}
+          </motion.ul>
         </div>
       </div>
-
-      <Modal open={videoOpen} onClose={() => setVideoOpen(false)} title="Product Overview">
-        <div className="aspect-video bg-[#edf3ed] rounded-xl flex items-center justify-center border border-[#cfdfcf]">
-          <div className="text-center">
-            <div className="w-16 h-16 rounded-full border-2 border-[#cfdfcf] bg-[#f5f8f5] flex items-center justify-center mx-auto mb-3">
-              <Play size={22} fill="black" className="ml-1" />
-            </div>
-            <p className="text-[#7c8a7c] text-sm font-dm">Video coming soon</p>
-          </div>
-        </div>
-      </Modal>
     </section>
   )
 }

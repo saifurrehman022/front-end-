@@ -1,6 +1,6 @@
 'use client'
 import { cn } from '@/lib/utils'
-import { InputHTMLAttributes, forwardRef } from 'react'
+import { InputHTMLAttributes, forwardRef, useId } from 'react'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
@@ -8,26 +8,35 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   icon?: React.ReactNode
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, icon, ...props }, ref) => (
-    <div className="flex flex-col gap-1.5 w-full">
-      {label && <label className="text-xs font-semibold text-[#999] font-dm uppercase tracking-widest">{label}</label>}
+const Input = forwardRef<HTMLInputElement, InputProps>(({ className, label, error, icon, id, ...props }, ref) => {
+  const autoId = useId()
+  const inputId = id || autoId
+  return (
+    <div className="flex w-full flex-col gap-1.5">
+      {label && (
+        <label htmlFor={inputId} className="font-mono text-[11px] uppercase tracking-[0.16em] text-fg-3">
+          {label}
+        </label>
+      )}
       <div className="relative">
-        {icon && <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#999]">{icon}</div>}
-        <input ref={ref} className={cn(
-          'w-full h-12 bg-[#f7f7f7] border border-[#e0e0e0] rounded-xl px-4 text-black',
-          'font-dm text-sm placeholder:text-[#bbb]',
-          'transition-all duration-200',
-          'focus:outline-none focus:border-black focus:bg-white focus:ring-0',
-          'hover:border-[#ccc]',
-          icon && 'pl-11',
-          error && 'border-red-300 focus:border-red-500 bg-red-50',
-          className
-        )} {...props} />
+        {icon && <div className="absolute left-4 top-1/2 -translate-y-1/2 text-fg-3">{icon}</div>}
+        <input
+          id={inputId}
+          ref={ref}
+          aria-invalid={!!error || undefined}
+          className={cn(
+            'h-12 w-full rounded-xl border border-line-2 bg-white/[0.03] px-4 font-dm text-sm text-fg placeholder:text-fg-3',
+            'transition-colors duration-200 hover:border-white/20 focus:border-gold/70 focus:bg-white/[0.05] focus:outline-none',
+            icon && 'pl-11',
+            error && 'border-red-400/60 focus:border-red-400',
+            className,
+          )}
+          {...props}
+        />
       </div>
-      {error && <p className="text-xs text-red-500 font-dm">{error}</p>}
+      {error && <p className="font-dm text-xs text-red-300">{error}</p>}
     </div>
   )
-)
+})
 Input.displayName = 'Input'
 export default Input
