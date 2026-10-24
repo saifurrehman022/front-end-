@@ -1,7 +1,7 @@
-# EchoLoft AI — Agency Website
+# EchoLoft AI — AI, Robotics & IoT Company Website
 
-Marketing site for EchoLoft AI, an AI development agency (RAG chatbots, AI agents, RunPod GPU deployment, ComfyUI pipelines, AI SaaS MVPs).
-Dark, 3D motion design built for lead generation, with full technical SEO.
+Website for EchoLoft AI: AI software (RAG chatbots, AI agents, GPU deployment, ComfyUI, AI SaaS) and robotics & IoT (Raspberry Pi, Arduino, ESP32).
+Dark 3D motion design with videos, mega menu, login/signup, case studies and a blog, built for lead generation and SEO.
 
 ## Stack
 
@@ -31,22 +31,31 @@ npm run build && npm start   # production
 
 | What | File |
 |---|---|
-| Brand name, email, socials, nav, SEO keywords | `lib/site.ts` |
-| Services (cards + one SEO landing page each) | `lib/services.ts` |
-| Work, process, promises, FAQ, team, tech list | `lib/content.ts` |
+| Brand name, email, phone, address, socials, nav, SEO keywords | `lib/site.ts` |
+| Services (11 — each gets its own SEO landing page) | `lib/services.ts` |
+| Projects / case studies (add YouTube IDs here) | `lib/projects.ts` |
+| Blog articles | `lib/blog.ts` |
+| Stats, why-us, process, FAQ, team, tech, hardware | `lib/content.ts` |
+| Video file paths | `lib/media.ts` (files in `public/videos/`) |
+
+### Videos
+`public/videos/` contains an original 16-second showreel and three looping clips (AI, robotics, IoT) with posters, in MP4 and WebM.
+To use your own footage, replace the files with the same names (keep them short and compressed, ideally under 3 MB each),
+or add a YouTube video ID to a project in `lib/projects.ts`.
 
 Adding a service to `lib/services.ts` automatically creates `/services/<slug>`, adds it to the sitemap, footer, contact form and structured data.
 
 ## Pages
 
-`/` · `/services` · `/services/[slug]` (7 landing pages) · `/about` · `/contact` · `/legal/privacy` · `/legal/terms` · `/auth/login` · `/auth/signup` · custom 404.
+`/` · `/services` · `/services/[slug]` (11) · `/projects` · `/projects/[slug]` (7) · `/blog` · `/blog/[slug]` (6) · `/about` · `/contact` · `/legal/*` · `/auth/login` · `/auth/signup` · `/feed.xml` · custom 404.
 `/dashboard` is a separate project and is excluded from search engines and lint.
 
 ## SEO built in
 
 - Unique title, meta description and canonical URL per page
 - Open Graph + Twitter cards with a generated 1200×630 image (`app/opengraph-image.tsx`)
-- JSON-LD: `ProfessionalService`, `WebSite`, `Service`, `BreadcrumbList`, `FAQPage`
+- JSON-LD: `ProfessionalService` (with offer catalog), `WebSite`, `Service`, `BlogPosting`, `VideoObject`, `ItemList`, `BreadcrumbList`, `FAQPage`
+- Blog with table of contents, RSS feed and internal links between services, projects and articles
 - `sitemap.xml`, `robots.txt`, web manifest and generated favicon
 - Keyword-targeted landing page for each service
 - Fully static pages, lazy-loaded WebGL, font `display: swap` for fast Core Web Vitals

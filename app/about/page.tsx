@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import { Target, Eye, Gauge, ShieldCheck } from 'lucide-react'
 import Container from '@/components/layout/Container'
+import PageHeader from '@/components/layout/PageHeader'
+import StatsBar from '@/components/sections/StatsBar'
+import RoboticsSection from '@/components/sections/RoboticsSection'
 import SectionHeading from '@/components/sections/SectionHeading'
 import CTASection from '@/components/sections/CTASection'
 import JsonLd from '@/components/seo/JsonLd'
@@ -9,9 +12,9 @@ import { breadcrumbSchema, pageMetadata } from '@/lib/seo'
 import { team, techStack } from '@/lib/content'
 
 export const metadata: Metadata = pageMetadata({
-  title: 'About EchoLoft AI — AI Engineers Building Production AI Products',
+  title: 'About EchoLoft AI — AI, Robotics & IoT Engineers',
   description:
-    'EchoLoft AI is a small, senior team of AI engineers. We design, build and deploy RAG systems, AI agents, GPU model APIs and AI SaaS products for startups and businesses worldwide.',
+    'EchoLoft AI is a senior team of AI and embedded engineers. We build RAG systems, AI agents, GPU model APIs and AI SaaS, plus robots and IoT devices with Raspberry Pi, Arduino and ESP32.',
   path: '/about',
 })
 
@@ -26,20 +29,15 @@ export default function AboutPage() {
   return (
     <>
       <JsonLd data={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'About', path: '/about' }])} />
-      <section className="relative overflow-hidden pb-20 pt-40">
-        <div aria-hidden className="grid-bg absolute inset-0 -z-10" />
-        <div aria-hidden className="absolute left-[-10%] top-20 -z-10 h-[420px] w-[420px] rounded-full bg-cyan/10 blur-[120px]" />
-        <Container>
-          <SectionHeading
-            as="h1"
-            eyebrow="About us"
-            title="Engineers who build AI"
-            accent="for the real world."
-            sub="EchoLoft AI started from a simple frustration: too many AI projects stall between a promising demo and a product people can use. We close that gap, from GPU infrastructure and model pipelines to the app your users touch."
-          />
-        </Container>
-      </section>
-
+      <PageHeader
+        eyebrow="About us"
+        title="Engineers who build"
+        accent="software and machines."
+        sub="EchoLoft AI started from a simple frustration: too many projects stall between a promising demo and something people can actually use. We close that gap, from GPU infrastructure and AI models to firmware, robots and the apps your users touch."
+        crumbs={[{ name: 'Home', href: '/' }, { name: 'About' }]}
+        video="robot"
+      />
+      <StatsBar />
       <section className="section border-t border-line">
         <Container>
           <SectionHeading eyebrow="What we value" title="Principles behind" accent="every build." />
@@ -99,6 +97,7 @@ export default function AboutPage() {
         </Container>
       </section>
 
+      <RoboticsSection />
       <CTASection />
     </>
   )

@@ -25,7 +25,7 @@ export default function ContactPage() {
   return (
     <>
       <JsonLd data={breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Contact', path: '/contact' }])} />
-      <section className="relative overflow-hidden pb-24 pt-40">
+      <section className="relative overflow-hidden pb-24 pt-36 lg:pt-52">
         <div aria-hidden className="grid-bg absolute inset-0 -z-10" />
         <div aria-hidden className="absolute right-0 top-40 -z-10 h-[500px] w-[500px] rounded-full bg-gold/10 blur-[140px]" />
         <Container>

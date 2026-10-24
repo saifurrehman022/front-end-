@@ -1,7 +1,7 @@
 import Container from '@/components/layout/Container'
 import { Reveal } from '@/components/motion/Motion'
 import SectionHeading from './SectionHeading'
-import { process, promises } from '@/lib/content'
+import { process } from '@/lib/content'
 
 export default function ProcessSection() {
   return (
@@ -23,15 +23,6 @@ export default function ProcessSection() {
         </ol>
         </div>
 
-        <div className="mt-20 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-line bg-line lg:grid-cols-4">
-          {promises.map((p, i) => (
-            <Reveal key={p.label} delay={i * 0.06} className="bg-ink-2 p-7 sm:p-9">
-              <p className="font-syne text-[clamp(30px,4vw,44px)] font-extrabold leading-none text-gradient">{p.value}</p>
-              <p className="mt-3 font-dm text-sm font-semibold text-fg">{p.label}</p>
-              <p className="mt-1.5 font-dm text-[13px] leading-relaxed text-fg-3">{p.desc}</p>
-            </Reveal>
-          ))}
-        </div>
       </Container>
     </section>
   )

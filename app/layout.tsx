@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   creator: siteConfig.name,
   publisher: siteConfig.name,
   category: 'technology',
-  alternates: { canonical: '/' },
+  alternates: { canonical: '/', types: { 'application/rss+xml': [{ url: '/feed.xml', title: `${siteConfig.name} Blog` }] } },
   formatDetection: { email: false, address: false, telephone: false },
   openGraph: {
     type: 'website',

@@ -22,9 +22,9 @@ export default function OgImage() {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div style={{ fontSize: 76, fontWeight: 800, lineHeight: 1.02, letterSpacing: -2, maxWidth: 900 }}>
-            Production AI, engineered end to end.
+            Intelligent software. Smart machines.
           </div>
-          <div style={{ fontSize: 30, color: '#A9ADB6' }}>RAG chatbots · AI agents · GPU deployment · AI SaaS</div>
+          <div style={{ fontSize: 30, color: '#A9ADB6' }}>AI · Robotics · Raspberry Pi · Arduino · ESP32 IoT</div>
         </div>
       </div>
     ),

@@ -1,81 +1,66 @@
-// Home / About page content. Replace the "work" entries with real client
-// projects (and add testimonials) as soon as you have permission to publish them.
+// Home / About page content. Replace with your own wording any time.
 
-export const work = [
-  {
-    tag: 'Generative video · GPU',
-    title: 'Serverless AI video and avatar pipeline',
-    desc: 'Image-to-video and audio-driven talking-avatar models deployed as autoscaling GPU workers, with a job API, progress tracking and media delivery.',
-    stack: ['ComfyUI', 'RunPod', 'Docker', 'PyTorch'],
-    metric: 'Scale from zero',
-  },
-  {
-    tag: 'Computer vision · API',
-    title: 'Face swap and enhancement API',
-    desc: 'An open-source face model turned into a production endpoint: pinned dependencies, cached weights, input validation and fast cold starts.',
-    stack: ['Python', 'ONNX', 'RunPod Serverless'],
-    metric: 'Pay per second',
-  },
-  {
-    tag: 'Creator platform · SaaS',
-    title: 'AI content studio with automated publishing',
-    desc: 'React and Supabase platform where creators generate media and schedule posts to a third-party platform through an OAuth integration.',
-    stack: ['React', 'TypeScript', 'Supabase', 'OAuth 2.0'],
-    metric: 'End-to-end product',
-  },
-  {
-    tag: 'Enterprise RAG · Chat',
-    title: 'Document chat with cited answers',
-    desc: 'Retrieval-augmented chat over PDFs, Word and Excel files with streaming answers, conversation memory and JWT auth with refresh rotation.',
-    stack: ['FastAPI', 'FAISS', 'Groq', 'Next.js'],
-    metric: 'Source-cited answers',
-  },
+export const stats = [
+  { value: 11, suffix: '', label: 'Specialist services', desc: 'Across AI software and robotics & IoT' },
+  { value: 2, suffix: '', label: 'Disciplines, one team', desc: 'Software and hardware built together' },
+  { value: 24, suffix: 'h', label: 'Reply time', desc: 'Every enquiry answered within a day' },
+  { value: 100, suffix: '%', label: 'Code ownership', desc: 'Your repo, your hardware designs' },
+]
+
+export const whyUs = [
+  { title: 'Software and hardware under one roof', desc: 'AI, cloud, firmware and electronics designed together, so the pieces actually fit.' },
+  { title: 'Production, not just prototypes', desc: 'Monitoring, OTA updates, auth and documentation are part of the build, not extras.' },
+  { title: 'Fixed scope and price', desc: 'A written plan with milestones and a fixed quote before any work starts.' },
+  { title: 'Weekly demos', desc: 'Working software or hardware every week, so you can test and redirect early.' },
+  { title: 'Senior engineers only', desc: 'The people you talk to are the people writing the code and wiring the boards.' },
+  { title: 'You own everything', desc: 'Source code, schematics, models and accounts are handed over at launch.' },
 ]
 
 export const process = [
-  { step: '01', title: 'Discovery call', desc: 'A free 30-minute call to understand the goal, the data and the constraints. You get an honest take on what will work.' },
-  { step: '02', title: 'Scope & fixed quote', desc: 'A written plan with milestones, stack and a fixed price or capped estimate. No surprises.' },
-  { step: '03', title: 'Build in weekly sprints', desc: 'Working software every week on a staging link, so you can test and redirect early.' },
-  { step: '04', title: 'Launch & handover', desc: 'Production deployment, documentation and a walkthrough. You own the code and the accounts.' },
+  { step: '01', title: 'Discovery call', desc: 'A free 30-minute call about your goal, data, hardware and constraints, with honest advice on what will work.' },
+  { step: '02', title: 'Scope & fixed quote', desc: 'A written plan with milestones, stack, parts list where needed, and a fixed price.' },
+  { step: '03', title: 'Build in weekly sprints', desc: 'Working software or hardware every week on a staging link or video demo.' },
+  { step: '04', title: 'Launch & handover', desc: 'Deployment, documentation and a walkthrough. You own the code, designs and accounts.' },
 ]
 
-export const promises = [
-  { value: '24h', label: 'Reply time', desc: 'Every enquiry gets a real answer within one business day.' },
-  { value: 'Weekly', label: 'Demos', desc: 'Progress you can click, not status reports.' },
-  { value: '100%', label: 'Code ownership', desc: 'Your repo, your cloud, your accounts. No lock-in.' },
-  { value: 'Fixed', label: 'Scope & price', desc: 'Agreed up front, with milestones you approve.' },
+export const industries = [
+  'Startups & SaaS', 'Creators & media', 'E-commerce', 'Manufacturing', 'Agriculture', 'Smart buildings', 'Education & research', 'Healthcare tech',
 ]
 
 export const homeFaqs = [
   {
-    q: 'What kind of AI projects do you build?',
-    a: 'RAG chatbots on company data, AI agents that automate multi-step work, GPU model deployment on RunPod serverless, ComfyUI image and video pipelines, and full-stack AI SaaS products with Next.js, FastAPI and Supabase.',
+    q: 'What does EchoLoft AI build?',
+    a: 'Two things: AI software, including RAG chatbots, AI agents, GPU model deployment, ComfyUI pipelines and AI SaaS products, and smart hardware, including robots and IoT systems built on Raspberry Pi, Arduino and ESP32.',
   },
   {
-    q: 'How much does an AI development project cost?',
-    a: 'It depends on scope. After a free discovery call we send a fixed quote or a capped estimate with clear milestones, so you know the cost before any work starts.',
+    q: 'Do you build robotics and IoT projects as well as software?',
+    a: 'Yes. We design and build robots, sensor networks and embedded devices, write the firmware, and connect them to cloud dashboards and AI. Combining hardware and software in one team is our main strength.',
   },
   {
-    q: 'How long does it take to build an AI product?',
-    a: 'Prototypes on your real data usually take one to two weeks. Production builds typically take three to eight weeks. You see working progress every week.',
+    q: 'How much does a project cost?',
+    a: 'It depends on scope. After a free discovery call we send a fixed quote with clear milestones, so you know the cost before any work starts.',
   },
   {
-    q: 'Can you work with our existing codebase and team?',
-    a: 'Yes. We regularly add AI features to existing products, work in your repository and follow your conventions and review process.',
+    q: 'How long does it take?',
+    a: 'Prototypes usually take one to three weeks. Production software builds take three to eight weeks, and hardware projects depend on parts and testing. You see progress every week.',
   },
   {
-    q: 'Do we own the code and models you build?',
-    a: 'Yes. All code, infrastructure and accounts belong to you, and we hand over documentation at launch.',
+    q: 'Do you work with clients outside your country?',
+    a: 'Yes. We work remotely with clients worldwide. For hardware projects we ship prototypes or work with your local team using detailed documentation and video calls.',
+  },
+  {
+    q: 'Who owns the code and designs?',
+    a: 'You do. All source code, firmware, schematics, models and accounts belong to you, and we hand over documentation at launch.',
   },
 ]
 
 export const team = [
   {
     name: 'Saif-Ur-Rehman',
-    role: 'Founder & Lead AI Engineer',
+    role: 'Founder & Lead Engineer',
     initials: 'SR',
-    bio: 'Builds AI products end to end: RunPod GPU deployments, ComfyUI video pipelines, RAG systems and React / Supabase platforms.',
-    tags: ['AI pipelines', 'GPU infra', 'Full-stack'],
+    bio: 'Builds AI products and smart hardware end to end: GPU model deployment, ComfyUI video pipelines, RAG systems, React / Supabase platforms, and robotics and IoT with Raspberry Pi, Arduino and ESP32.',
+    tags: ['AI pipelines', 'Robotics & IoT', 'Full-stack'],
   },
   {
     name: 'Ezio',
@@ -87,7 +72,15 @@ export const team = [
 ]
 
 export const techStack = [
-  'Next.js', 'React', 'TypeScript', 'Python', 'FastAPI', 'Supabase', 'PostgreSQL', 'MongoDB',
-  'RunPod', 'Docker', 'PyTorch', 'ComfyUI', 'Hugging Face', 'LangChain', 'Claude', 'OpenAI',
-  'Groq', 'FAISS', 'Three.js', 'Stripe',
+  'Next.js', 'React', 'TypeScript', 'Python', 'FastAPI', 'Supabase', 'PostgreSQL', 'RunPod', 'Docker', 'PyTorch',
+  'ComfyUI', 'LangChain', 'Claude', 'OpenAI', 'Raspberry Pi', 'Arduino', 'ESP32', 'C++', 'MQTT', 'OpenCV', 'ROS 2', 'Three.js',
+]
+
+export const hardware = [
+  { name: 'Raspberry Pi', desc: 'Vision, edge AI, gateways' },
+  { name: 'ESP32', desc: 'Wi-Fi & BLE IoT nodes' },
+  { name: 'Arduino', desc: 'Motors, sensors, control' },
+  { name: 'Sensors', desc: 'IMU, temp, distance, load' },
+  { name: 'Motors', desc: 'Servo, stepper, DC + PID' },
+  { name: 'MQTT & Cloud', desc: 'Telemetry, OTA, dashboards' },
 ]
