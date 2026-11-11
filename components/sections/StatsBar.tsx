@@ -28,7 +28,7 @@ function Counter({ to, suffix }: { to: number; suffix: string }) {
 
 export default function StatsBar() {
   return (
-    <section aria-label="Key facts" className="relative border-b border-line">
+    <section aria-label="Key facts" className="theme-dark relative border-b border-line">
       <div className="mx-auto grid max-w-site grid-cols-2 lg:grid-cols-4">
         {stats.map((s, i) => (
           <div key={s.label} className={`px-5 py-10 sm:px-8 ${i % 2 ? '' : 'border-r border-line'} ${i < 2 ? 'border-b border-line lg:border-b-0' : ''} ${i === 1 ? 'lg:border-r' : ''} ${i === 2 ? 'lg:border-r' : ''}`}>

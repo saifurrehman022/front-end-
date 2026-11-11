@@ -1,10 +1,77 @@
 // Home / About page content. Replace with your own wording any time.
 
 export const stats = [
-  { value: 11, suffix: '', label: 'Specialist services', desc: 'Across AI software and robotics & IoT' },
-  { value: 2, suffix: '', label: 'Disciplines, one team', desc: 'Software and hardware built together' },
-  { value: 24, suffix: 'h', label: 'Reply time', desc: 'Every enquiry answered within a day' },
-  { value: 100, suffix: '%', label: 'Code ownership', desc: 'Your repo, your hardware designs' },
+  { value: 30, suffix: '+', label: 'Projects delivered', desc: 'For clients across Europe, the US, NZ and Asia' },
+  { value: 100, suffix: '%', label: 'Job Success Score', desc: 'Upwork Rising Talent, every contract closed well' },
+  { value: 5, suffix: '.0', label: 'Client rating', desc: 'Average across Upwork and Fiverr reviews' },
+  { value: 3, suffix: '+ yrs', label: 'Shipping production AI', desc: 'Pipelines, agents and GPU systems since 2023' },
+]
+
+/** Platform credentials shown in the proof strip. */
+export const credentials = [
+  { title: 'Upwork Rising Talent', detail: '100% Job Success · 5.0 rating' },
+  { title: 'Fiverr Level 1 Seller', detail: '30+ orders delivered · 5.0 rating' },
+  { title: 'BS Artificial Intelligence', detail: 'COMSATS University Islamabad' },
+  { title: 'Anthropic certified', detail: 'Claude Agent Development · Advanced MCP' },
+  { title: 'Coursera certified', detail: 'FastAPI with Security Protocols' },
+]
+
+/** Real client engagements with measurable outcomes. */
+export const engagements = [
+  {
+    client: 'Todin',
+    sector: 'Multi-store retail',
+    period: '2024 – 2025',
+    title: 'Unified data pipeline and sales forecasting across retail stores',
+    outcome: 'Merged Excel, CSV and transactional data from several stores into one clean pipeline, removed duplicate products, and shipped real-time recommendations that improved cross-shop forecasting.',
+    metric: 'Several stores → one source of truth',
+    stack: ['Python', 'Pandas', 'ETL', 'Recommendation systems'],
+  },
+  {
+    client: 'Helix Capital Corp',
+    sector: 'Finance · AI automation',
+    period: '2025',
+    title: 'Root-cause analysis on a production AI pipeline',
+    outcome: 'Traced a silent accuracy failure through logs and outputs to a clash between TensorRT optimisation and model masking logic, then restored consistent, accurate output.',
+    metric: 'Production accuracy restored',
+    stack: ['TensorRT', 'PyTorch', 'Logging', 'RCA'],
+  },
+  {
+    client: 'New Zealand Experimental Ltd',
+    sector: 'Forecasting',
+    period: '2025',
+    title: 'Spreadsheet data to time-series forecasting models',
+    outcome: 'Turned messy spreadsheets into model-ready sequences, then built and benchmarked an LSTM against a formula-driven model with documented trade-offs for the client.',
+    metric: 'Two models benchmarked side by side',
+    stack: ['LSTM', 'Feature engineering', 'Python'],
+  },
+  {
+    client: 'Email automation client',
+    sector: 'SaaS · Support',
+    period: '',
+    title: 'LLM-powered email reply automation at scale',
+    outcome: 'Automated replies with LLaMA on Groq, adding batching, caching and rate limiting so the system served 1,000 users within strict API limits.',
+    metric: '1,000 users at 30 req/min',
+    stack: ['Groq', 'LLaMA', 'Caching', 'Rate limiting'],
+  },
+  {
+    client: 'Creator platform',
+    sector: 'Generative media',
+    period: '',
+    title: 'Batch AI video pipeline with per-client isolation',
+    outcome: 'Parallel ComfyUI job execution on serverless GPUs with isolated queues per account, so concurrent customers never block each other.',
+    metric: '1 min of video in ~6 min',
+    stack: ['ComfyUI', 'FastAPI', 'RunPod', 'TypeScript'],
+  },
+  {
+    client: 'Research data client',
+    sector: 'Data intelligence',
+    period: '',
+    title: 'Multi-agent data retrieval and report automation',
+    outcome: 'Agents detect gaps in incomplete datasets, generate search queries, retrieve the missing data from the web and compile structured, location-specific reports.',
+    metric: 'Manual research → automated reports',
+    stack: ['LLM agents', 'Web search', 'Python'],
+  },
 ]
 
 export const whyUs = [
@@ -12,7 +79,7 @@ export const whyUs = [
   { title: 'Production, not just prototypes', desc: 'Monitoring, OTA updates, auth and documentation are part of the build, not extras.' },
   { title: 'Fixed scope and price', desc: 'A written plan with milestones and a fixed quote before any work starts.' },
   { title: 'Weekly demos', desc: 'Working software or hardware every week, so you can test and redirect early.' },
-  { title: 'Senior engineers only', desc: 'The people you talk to are the people writing the code and wiring the boards.' },
+  { title: 'Proven track record', desc: '30+ projects delivered with a 100% Job Success Score and a 5.0 rating from international clients.' },
   { title: 'You own everything', desc: 'Source code, schematics, models and accounts are handed over at launch.' },
 ]
 
@@ -24,13 +91,13 @@ export const process = [
 ]
 
 export const industries = [
-  'Startups & SaaS', 'Creators & media', 'E-commerce', 'Manufacturing', 'Agriculture', 'Smart buildings', 'Education & research', 'Healthcare tech',
+  'Startups & SaaS', 'Retail & e-commerce', 'Finance', 'Creators & media', 'Manufacturing', 'Agriculture', 'Smart buildings', 'Education & research', 'Healthcare tech',
 ]
 
 export const homeFaqs = [
   {
     q: 'What does EchoLoft AI build?',
-    a: 'Two things: AI software, including RAG chatbots, AI agents, GPU model deployment, ComfyUI pipelines and AI SaaS products, and smart hardware, including robots and IoT systems built on Raspberry Pi, Arduino and ESP32.',
+    a: 'AI automation and data systems, including ETL pipelines, RAG chatbots, AI agents, GPU model deployment and AI SaaS products, plus smart hardware: robots and IoT systems built on Raspberry Pi, Arduino and ESP32.',
   },
   {
     q: 'Do you build robotics and IoT projects as well as software?',
@@ -59,8 +126,9 @@ export const team = [
     name: 'Saif-Ur-Rehman',
     role: 'Founder & Lead Engineer',
     initials: 'SR',
-    bio: 'Builds AI products and smart hardware end to end: GPU model deployment, ComfyUI video pipelines, RAG systems, React / Supabase platforms, and robotics and IoT with Raspberry Pi, Arduino and ESP32.',
-    tags: ['AI pipelines', 'Robotics & IoT', 'Full-stack'],
+    bio: 'BS in Artificial Intelligence (COMSATS). Full-time software engineer for a Belgium-based company and Upwork Rising Talent with 30+ projects delivered at a 100% Job Success Score. Builds data pipelines, LLM automation, GPU video systems, RAG platforms and ESP32 / Raspberry Pi hardware end to end.',
+    tags: ['Data pipelines', 'LLM automation', 'GPU systems', 'Robotics & IoT'],
+    links: { linkedin: 'https://www.linkedin.com/in/saif-ur-rehman-342a57235', github: 'https://github.com/saif816' },
   },
   {
     name: 'Ezio',
@@ -72,7 +140,7 @@ export const team = [
 ]
 
 export const techStack = [
-  'Next.js', 'React', 'TypeScript', 'Python', 'FastAPI', 'Supabase', 'PostgreSQL', 'RunPod', 'Docker', 'PyTorch',
+  'Next.js', 'React', 'TypeScript', 'Python', 'Pandas', 'FastAPI', 'MongoDB', 'FAISS', 'Groq', 'CrewAI', 'MCP', 'Supabase', 'PostgreSQL', 'RunPod', 'Docker', 'PyTorch',
   'ComfyUI', 'LangChain', 'Claude', 'OpenAI', 'Raspberry Pi', 'Arduino', 'ESP32', 'C++', 'MQTT', 'OpenCV', 'ROS 2', 'Three.js',
 ]
 

@@ -98,7 +98,7 @@ export function ShowcasePlayer({ src, title, className = '' }: { src: Src; title
           aria-label={`Play video: ${title}`}
           className="absolute inset-0 grid place-items-center bg-gradient-to-t from-ink/70 via-ink/10 to-transparent"
         >
-          <span className="relative grid h-20 w-20 place-items-center rounded-full bg-gold text-ink shadow-[0_0_0_10px_rgba(232,180,74,0.18),0_20px_60px_-10px_rgba(232,180,74,0.7)] transition-transform duration-300 group-hover:scale-110 sm:h-24 sm:w-24">
+          <span className="relative grid h-20 w-20 place-items-center rounded-full bg-gold text-black shadow-[0_0_0_10px_rgba(232,180,74,0.18),0_20px_60px_-10px_rgba(232,180,74,0.7)] transition-transform duration-300 group-hover:scale-110 sm:h-24 sm:w-24">
             <span className="absolute inset-0 animate-ping rounded-full bg-gold/30" />
             {playing ? <Pause size={30} /> : <Play size={30} className="ml-1" fill="currentColor" />}
           </span>
@@ -125,7 +125,7 @@ export function YouTubeLite({ id, title }: { id: string; title: string }) {
         <button type="button" onClick={() => setOn(true)} aria-label={`Play video: ${title}`} className="group absolute inset-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt={title} className="h-full w-full object-cover opacity-80" loading="lazy" />
-          <span className="absolute left-1/2 top-1/2 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-gold text-ink transition-transform group-hover:scale-110">
+          <span className="absolute left-1/2 top-1/2 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-gold text-black transition-transform group-hover:scale-110">
             <Play size={30} className="ml-1" fill="currentColor" />
           </span>
         </button>

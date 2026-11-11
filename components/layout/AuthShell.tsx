@@ -4,7 +4,7 @@ import { siteConfig } from '@/lib/site'
 export default function AuthShell({ side, children }: { side: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-ink">
-      <aside className="relative hidden w-[44%] flex-col justify-between overflow-hidden border-r border-line bg-ink-2 p-14 lg:flex">
+      <aside className="theme-dark relative hidden w-[44%] flex-col justify-between overflow-hidden border-r border-line bg-ink-2 p-14 lg:flex">
         <div aria-hidden className="grid-bg absolute inset-0" />
         <div aria-hidden className="hero-fallback absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full blur-3xl" />
         <div className="relative"><Logo /></div>

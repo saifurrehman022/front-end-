@@ -7,7 +7,7 @@ import { siteConfig } from '@/lib/site'
 
 const budgets = ['Under $2k', '$2k – $5k', '$5k – $15k', '$15k – $50k', '$50k+', 'Not sure yet']
 const fieldCls =
-  'w-full rounded-xl border border-line-2 bg-white/[0.03] px-4 font-dm text-sm text-fg transition-colors focus:border-gold/70 focus:bg-white/[0.05] focus:outline-none'
+  'w-full rounded-xl border border-line-2 bg-fg/[0.03] px-4 font-dm text-sm text-fg transition-colors focus:border-gold/70 focus:bg-fg/[0.05] focus:outline-none'
 
 export default function ContactForm() {
   const [form, setForm] = useState({ name: '', email: '', company: '', service: '', budget: '', message: '', website: '' })

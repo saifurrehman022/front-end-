@@ -38,11 +38,11 @@ export default function RoboticsSection() {
 
           <Reveal delay={0.1}>
             <div className="relative">
-              <div className="relative overflow-hidden rounded-[28px] border border-line-2 shadow-[0_40px_120px_-30px_rgba(110,231,249,0.25)]">
+              <div className="relative overflow-hidden rounded-[28px] border border-line-2 shadow-[var(--shadow-lg)]">
                 <LoopVideo src={videos.robot} className="aspect-video w-full object-cover" label="Animation of a robotic arm scanning objects" />
                 <span className="absolute left-4 top-4 rounded-full bg-ink/70 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-gold backdrop-blur">Robotics</span>
               </div>
-              <div className="relative -mt-16 ml-auto w-[70%] overflow-hidden rounded-[22px] border border-line-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)] sm:-mt-24 sm:w-[62%]">
+              <div className="relative -mt-16 ml-auto w-[70%] overflow-hidden rounded-[22px] border border-line-2 shadow-[var(--shadow-lg)] sm:-mt-24 sm:w-[62%]">
                 <LoopVideo src={videos.iot} className="aspect-video w-full object-cover" label="Animation of ESP32, Raspberry Pi and Arduino devices streaming data to a dashboard" />
                 <span className="absolute left-3 top-3 rounded-full bg-ink/70 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-cyan backdrop-blur">IoT telemetry</span>
               </div>

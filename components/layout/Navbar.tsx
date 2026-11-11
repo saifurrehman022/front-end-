@@ -12,7 +12,7 @@ import Logo from './Logo'
 function TopBar() {
   const s = siteConfig.socials
   return (
-    <div className="hidden border-b border-line bg-ink-2/80 lg:block">
+    <div className="theme-dark hidden border-b border-line bg-ink lg:block">
       <div className="mx-auto flex h-10 max-w-site items-center justify-between px-8 font-dm text-[13px] text-fg-3">
         <div className="flex items-center gap-6">
           <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-2 hover:text-fg"><Mail size={13} /> {siteConfig.email}</a>
@@ -33,14 +33,14 @@ function TopBar() {
 
 function MegaMenu({ onNavigate }: { onNavigate: () => void }) {
   return (
-    <div className="grid w-[860px] grid-cols-[1fr_1fr_240px] gap-2 rounded-3xl border border-line-2 bg-[#0d0f14]/[0.98] p-3 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl">
+    <div className="grid w-[860px] grid-cols-[1fr_1fr_240px] gap-2 rounded-3xl border border-line-2 bg-ink/[0.98] p-3 shadow-[var(--shadow-lg)] backdrop-blur-xl">
       {(Object.keys(categories) as ServiceCategory[]).map(c => (
         <div key={c} className="p-2">
           <p className="px-3 pb-2 pt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-gold">{categories[c].label}</p>
           <ul>
             {servicesBy(c).map(s => (
               <li key={s.slug}>
-                <Link href={`/services/${s.slug}`} onClick={onNavigate} className="flex gap-3 rounded-2xl p-3 transition-colors hover:bg-white/[0.05]">
+                <Link href={`/services/${s.slug}`} onClick={onNavigate} className="flex gap-3 rounded-2xl p-3 transition-colors hover:bg-fg/[0.05]">
                   <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-gold/25 bg-gold/10 text-gold"><ServiceIcon name={s.icon} size={17} /></span>
                   <span className="min-w-0">
                     <span className="block font-dm text-sm font-semibold text-fg">{s.name}</span>
@@ -106,7 +106,7 @@ export default function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <TopBar />
-      <div className={cn('transition-all duration-500', scrolled || open ? 'border-b border-line bg-ink/85 backdrop-blur-xl' : 'border-b border-transparent')}>
+      <div className={cn('transition-all duration-500', scrolled || open ? 'border-b border-line bg-ink/95 shadow-[0_8px_30px_-18px_rgba(11,12,14,0.25)] backdrop-blur-xl' : 'border-b border-line bg-ink/90 backdrop-blur-xl')}>
         <div className="mx-auto flex h-[72px] max-w-site items-center justify-between px-5 sm:px-8">
           <Logo />
 
@@ -119,7 +119,7 @@ export default function Navbar() {
                     aria-expanded={mega}
                     aria-haspopup="true"
                     onFocus={openMega}
-                    className={cn('flex items-center gap-1 rounded-full px-4 py-2 font-dm text-sm font-medium transition-colors', isActive(l.href) ? 'bg-white/[0.08] text-fg' : 'text-fg-2 hover:text-fg')}
+                    className={cn('flex items-center gap-1 rounded-full px-4 py-2 font-dm text-sm font-medium transition-colors', isActive(l.href) ? 'bg-fg/[0.08] text-fg' : 'text-fg-2 hover:text-fg')}
                   >
                     {l.label} <ChevronDown size={14} className={cn('transition-transform', mega && 'rotate-180')} />
                   </Link>
@@ -131,7 +131,7 @@ export default function Navbar() {
                 <Link
                   key={l.href}
                   href={l.href}
-                  className={cn('rounded-full px-4 py-2 font-dm text-sm font-medium transition-colors', isActive(l.href) ? 'bg-white/[0.08] text-fg' : 'text-fg-2 hover:text-fg')}
+                  className={cn('rounded-full px-4 py-2 font-dm text-sm font-medium transition-colors', isActive(l.href) ? 'bg-fg/[0.08] text-fg' : 'text-fg-2 hover:text-fg')}
                 >
                   {l.label}
                 </Link>
@@ -182,7 +182,7 @@ export default function Navbar() {
                     type="button"
                     onClick={() => setMobileServices(v => !v)}
                     aria-expanded={mobileServices}
-                    className={cn('flex w-full items-center justify-between rounded-2xl px-4 py-3 font-dm text-base', isActive(l.href) ? 'bg-white/[0.08] text-fg' : 'text-fg-2')}
+                    className={cn('flex w-full items-center justify-between rounded-2xl px-4 py-3 font-dm text-base', isActive(l.href) ? 'bg-fg/[0.08] text-fg' : 'text-fg-2')}
                   >
                     {l.label} <ChevronDown size={16} className={cn('transition-transform', mobileServices && 'rotate-180')} />
                   </button>
@@ -201,7 +201,7 @@ export default function Navbar() {
                   )}
                 </div>
               ) : (
-                <Link key={l.href} href={l.href} className={cn('rounded-2xl px-4 py-3 font-dm text-base', isActive(l.href) ? 'bg-white/[0.08] text-fg' : 'text-fg-2')}>
+                <Link key={l.href} href={l.href} className={cn('rounded-2xl px-4 py-3 font-dm text-base', isActive(l.href) ? 'bg-fg/[0.08] text-fg' : 'text-fg-2')}>
                   {l.label}
                 </Link>
               ),

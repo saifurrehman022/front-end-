@@ -4,7 +4,7 @@ import { siteConfig } from '@/lib/site'
 export default function Logo({ className = '' }: { className?: string }) {
   return (
     <Link href="/" aria-label={`${siteConfig.name} home`} className={`group flex items-center gap-2.5 ${className}`}>
-      <span className="relative grid h-9 w-9 place-items-center rounded-xl border border-gold/50 bg-ink-3">
+      <span className="relative grid h-9 w-9 place-items-center rounded-xl bg-[#0B0C0E] ring-1 ring-gold/40">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
           <path d="M5 5h14M5 12h10M5 19h14" stroke="#E8B44A" strokeWidth="2.6" strokeLinecap="round" />
           <circle cx="19" cy="12" r="2" fill="#6EE7F9" />

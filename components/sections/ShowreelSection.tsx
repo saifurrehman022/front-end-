@@ -35,7 +35,7 @@ export default function ShowreelSection() {
           </Reveal>
         </div>
         <Reveal>
-          <div className="relative rounded-[28px] bg-gradient-to-br from-gold/40 via-white/10 to-cyan/30 p-px shadow-[0_40px_120px_-30px_rgba(232,180,74,0.35)]">
+          <div className="relative rounded-[28px] bg-gradient-to-br from-gold/40 via-fg/10 to-cyan/30 p-px shadow-[var(--shadow-lg)]">
             <ShowcasePlayer src={videos.showreel} title={`${siteConfig.name} showreel`} className="aspect-video rounded-[27px] bg-ink-3" />
           </div>
         </Reveal>

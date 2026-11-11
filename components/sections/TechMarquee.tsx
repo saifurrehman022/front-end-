@@ -3,7 +3,7 @@ import { techStack } from '@/lib/content'
 export default function TechMarquee() {
   const items = [...techStack, ...techStack]
   return (
-    <section aria-label="Technology we work with" className="relative border-y border-line bg-ink-2/60 py-6">
+    <section aria-label="Technology we work with" className="theme-dark relative border-y border-line bg-ink-2 py-6">
       <div className="overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]">
         <ul className="animate-marquee flex w-max gap-10 hover:[animation-play-state:paused]">
           {items.map((t, i) => (

@@ -5,11 +5,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: { DEFAULT: '#07080B', 2: '#0C0E13', 3: '#12151C', 4: '#1A1E27' },
-        line: { DEFAULT: 'rgba(255,255,255,0.08)', 2: 'rgba(255,255,255,0.14)' },
-        fg: { DEFAULT: '#F3F1EA', 2: '#A9ADB6', 3: '#6E737E' },
-        gold: { DEFAULT: '#E8B44A', 2: '#F5CF7C', 3: '#B98A2C' },
-        cyan: { DEFAULT: '#6EE7F9', 2: '#38BDF8' },
+        ink: { DEFAULT: 'rgb(var(--ink) / <alpha-value>)', 2: 'rgb(var(--ink-2) / <alpha-value>)', 3: 'rgb(var(--ink-3) / <alpha-value>)', 4: 'rgb(var(--ink-4) / <alpha-value>)' },
+        line: { DEFAULT: 'var(--line)', 2: 'var(--line-2)' },
+        fg: { DEFAULT: 'rgb(var(--fg) / <alpha-value>)', 2: 'rgb(var(--fg-2) / <alpha-value>)', 3: 'rgb(var(--fg-3) / <alpha-value>)' },
+        gold: { DEFAULT: 'rgb(var(--gold) / <alpha-value>)', 2: 'rgb(var(--gold-2) / <alpha-value>)', 3: 'rgb(var(--gold-3) / <alpha-value>)' },
+        cyan: { DEFAULT: 'rgb(var(--cyan) / <alpha-value>)', 2: 'rgb(var(--cyan-2) / <alpha-value>)' },
       },
       fontFamily: {
         syne: ['var(--font-syne)', 'Syne', 'sans-serif'],

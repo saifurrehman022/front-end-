@@ -11,7 +11,7 @@ export default function CTASection() {
     <section className="py-24">
       <Container>
         <Reveal>
-          <div className="relative isolate overflow-hidden rounded-[32px] border border-gold/30 px-6 py-16 text-center sm:px-12 sm:py-24">
+          <div className="theme-dark relative isolate overflow-hidden rounded-[32px] border border-gold/30 shadow-[var(--shadow-lg)] px-6 py-16 text-center sm:px-12 sm:py-24">
             <LoopVideo src={videos.ai} className="absolute inset-0 -z-20 h-full w-full object-cover opacity-50" />
             <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(80%_120%_at_50%_0%,rgba(232,180,74,0.22),transparent_60%),linear-gradient(to_bottom,rgba(7,8,11,0.55),rgba(7,8,11,0.85))]" />
             <p className="eyebrow mb-5 justify-center">Start a project</p>

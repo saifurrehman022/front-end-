@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
-import { Target, Eye, Gauge, ShieldCheck } from 'lucide-react'
+import { Target, Eye, Gauge, ShieldCheck, Github, Linkedin } from 'lucide-react'
 import Container from '@/components/layout/Container'
 import PageHeader from '@/components/layout/PageHeader'
 import StatsBar from '@/components/sections/StatsBar'
+import TrackRecord from '@/components/sections/TrackRecord'
 import RoboticsSection from '@/components/sections/RoboticsSection'
 import SectionHeading from '@/components/sections/SectionHeading'
 import CTASection from '@/components/sections/CTASection'
@@ -14,7 +15,7 @@ import { team, techStack } from '@/lib/content'
 export const metadata: Metadata = pageMetadata({
   title: 'About EchoLoft AI — AI, Robotics & IoT Engineers',
   description:
-    'EchoLoft AI is a senior team of AI and embedded engineers. We build RAG systems, AI agents, GPU model APIs and AI SaaS, plus robots and IoT devices with Raspberry Pi, Arduino and ESP32.',
+    'EchoLoft AI is a senior team of AI, data and embedded engineers with 30+ projects delivered, a 100% Job Success Score and a 5.0 client rating. Data pipelines, AI agents, GPU model APIs, robotics and IoT.',
   path: '/about',
 })
 
@@ -66,7 +67,7 @@ export default function AboutPage() {
             {team.map((m, i) => (
               <Reveal key={m.name} delay={i * 0.1}>
                 <article className="glass flex h-full gap-6 rounded-3xl p-8">
-                  <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-gold to-gold-3 font-syne text-xl font-extrabold text-ink">
+                  <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-gold to-gold-3 font-syne text-xl font-extrabold text-black">
                     {m.initials}
                   </span>
                   <div>
@@ -78,6 +79,12 @@ export default function AboutPage() {
                         <span key={t} className="rounded-full border border-line px-2.5 py-1 font-mono text-[11px] text-fg-2">{t}</span>
                       ))}
                     </div>
+                    {m.links && (
+                      <div className="mt-5 flex gap-2">
+                        <a href={m.links.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`${m.name} on LinkedIn`} className="grid h-9 w-9 place-items-center rounded-full border border-line-2 text-fg-2 transition-colors hover:border-gold/50 hover:text-gold"><Linkedin size={15} /></a>
+                        <a href={m.links.github} target="_blank" rel="noopener noreferrer" aria-label={`${m.name} on GitHub`} className="grid h-9 w-9 place-items-center rounded-full border border-line-2 text-fg-2 transition-colors hover:border-gold/50 hover:text-gold"><Github size={15} /></a>
+                      </div>
+                    )}
                   </div>
                 </article>
               </Reveal>
@@ -85,6 +92,8 @@ export default function AboutPage() {
           </div>
         </Container>
       </section>
+
+      <TrackRecord />
 
       <section className="section border-t border-line">
         <Container>

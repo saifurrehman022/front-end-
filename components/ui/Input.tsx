@@ -25,8 +25,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({ className, label, erro
           ref={ref}
           aria-invalid={!!error || undefined}
           className={cn(
-            'h-12 w-full rounded-xl border border-line-2 bg-white/[0.03] px-4 font-dm text-sm text-fg placeholder:text-fg-3',
-            'transition-colors duration-200 hover:border-white/20 focus:border-gold/70 focus:bg-white/[0.05] focus:outline-none',
+            'h-12 w-full rounded-xl border border-line-2 bg-fg/[0.03] px-4 font-dm text-sm text-fg placeholder:text-fg-3',
+            'transition-colors duration-200 hover:border-fg/25 focus:border-gold/70 focus:bg-fg/[0.05] focus:outline-none',
             icon && 'pl-11',
             error && 'border-red-400/60 focus:border-red-400',
             className,

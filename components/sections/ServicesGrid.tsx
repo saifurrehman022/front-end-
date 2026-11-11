@@ -30,7 +30,7 @@ export default function ServicesGrid({ heading = true, initial = 'ai' }: { headi
                 onClick={() => setTab(c)}
                 className={cn('relative rounded-full px-5 py-2.5 font-dm text-sm font-semibold transition-colors', tab === c ? 'text-ink' : 'text-fg-2 hover:text-fg')}
               >
-                {tab === c && <motion.span layoutId="svc-tab" className="absolute inset-0 rounded-full bg-gold" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />}
+                {tab === c && <motion.span layoutId="svc-tab" className="absolute inset-0 rounded-full bg-fg" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />}
                 <span className="relative">{categories[c].label}</span>
               </button>
             ))}
@@ -58,7 +58,7 @@ export default function ServicesGrid({ heading = true, initial = 'ai' }: { headi
                     <p className="mt-3 flex-1 font-dm text-[15px] leading-relaxed text-fg-2">{s.summary}</p>
                     <div className="mt-6 flex flex-wrap gap-1.5">
                       {s.stack.slice(0, 4).map(t => (
-                        <span key={t} className="rounded-full bg-white/[0.05] px-2.5 py-1 font-mono text-[11px] text-fg-3">{t}</span>
+                        <span key={t} className="rounded-full bg-fg/[0.05] px-2.5 py-1 font-mono text-[11px] text-fg-3">{t}</span>
                       ))}
                     </div>
                     <span className="mt-6 inline-flex items-center gap-1.5 font-dm text-sm font-semibold text-gold">

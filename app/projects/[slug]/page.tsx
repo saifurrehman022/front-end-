@@ -52,7 +52,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
             {p.youtubeId ? (
               <YouTubeLite id={p.youtubeId} title={p.title} />
             ) : (
-              <div className="rounded-[28px] bg-gradient-to-br from-gold/40 via-white/10 to-cyan/30 p-px">
+              <div className="rounded-[28px] bg-gradient-to-br from-gold/40 via-fg/10 to-cyan/30 p-px">
                 <ShowcasePlayer src={v} title={p.title} className="aspect-video rounded-[27px] bg-ink-3" />
               </div>
             )}

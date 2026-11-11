@@ -13,7 +13,7 @@ export default function ProcessSection() {
         <ol className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
           {process.map((p, i) => (
             <Reveal as="li" key={p.step} delay={i * 0.1} className="relative">
-              <span className="relative z-10 grid h-14 w-14 place-items-center rounded-full border border-gold/40 bg-ink font-mono text-sm text-gold shadow-[0_0_30px_-6px_rgba(232,180,74,0.5)]">
+              <span className="relative z-10 grid h-14 w-14 place-items-center rounded-full border border-gold/40 bg-ink font-mono text-sm text-gold shadow-[var(--glass-shadow)]">
                 {p.step}
               </span>
               <h3 className="mt-6 font-syne text-xl font-bold text-fg">{p.title}</h3>

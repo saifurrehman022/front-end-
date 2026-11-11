@@ -20,7 +20,7 @@ export default function Footer() {
   ].filter(x => x.href)
 
   return (
-    <footer className="relative border-t border-line bg-ink-2">
+    <footer className="theme-dark relative border-t border-line bg-ink-2">
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
       <Container className="py-16">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_0.8fr_1fr]">

@@ -71,7 +71,7 @@ export default function SignupPage() {
         {form.password.length > 0 && (
           <div className="-mt-1 flex flex-col gap-1.5">
             <div className="flex gap-1">
-              {[1, 2, 3, 4].map(i => <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= s ? sColors[s] : 'bg-white/10'}`} />)}
+              {[1, 2, 3, 4].map(i => <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= s ? sColors[s] : 'bg-fg/10'}`} />)}
             </div>
             <p className="font-dm text-xs text-fg-3">{sLabels[s]} password</p>
           </div>

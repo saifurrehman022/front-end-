@@ -77,7 +77,7 @@ export default function DashboardPage() {
             type="button"
             onClick={() => { setTab(n.id); setMenu(false) }}
             aria-current={tab === n.id ? 'page' : undefined}
-            className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-left font-dm text-sm font-medium transition-colors ${tab === n.id ? 'bg-gold/10 text-gold' : 'text-fg-2 hover:bg-white/[0.04] hover:text-fg'}`}
+            className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-left font-dm text-sm font-medium transition-colors ${tab === n.id ? 'bg-gold/10 text-gold' : 'text-fg-2 hover:bg-fg/[0.04] hover:text-fg'}`}
           >
             <n.icon size={18} /> {n.label}
           </button>
@@ -113,7 +113,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link href="/" className="hidden font-dm text-sm text-fg-3 hover:text-fg sm:block">Back to website</Link>
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-gold to-gold-3 font-syne text-sm font-bold uppercase text-ink">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-gold to-gold-3 font-syne text-sm font-bold uppercase text-black">
               {name.slice(0, 1)}
             </span>
           </div>

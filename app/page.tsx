@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Hero from '@/components/sections/Hero'
 import TechMarquee from '@/components/sections/TechMarquee'
 import StatsBar from '@/components/sections/StatsBar'
+import TrackRecord from '@/components/sections/TrackRecord'
 import ShowreelSection from '@/components/sections/ShowreelSection'
 import ServicesGrid from '@/components/sections/ServicesGrid'
 import RoboticsSection from '@/components/sections/RoboticsSection'
@@ -26,6 +27,7 @@ export default function HomePage() {
       <Hero />
       <TechMarquee />
       <StatsBar />
+      <TrackRecord limit={3} />
       <ShowreelSection />
       <ServicesGrid />
       <RoboticsSection />

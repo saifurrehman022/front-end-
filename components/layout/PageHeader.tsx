@@ -23,7 +23,7 @@ export default function PageHeader({
   children?: React.ReactNode
 }) {
   return (
-    <section className="relative isolate overflow-hidden border-b border-line pb-20 pt-36 lg:pt-48">
+    <section className="theme-dark relative isolate overflow-hidden border-b border-line pb-20 pt-36 lg:pt-48">
       {video && (
         <>
           <LoopVideo src={videos[video]} className="absolute inset-0 -z-20 h-full w-full object-cover opacity-45" />

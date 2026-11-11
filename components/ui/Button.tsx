@@ -13,7 +13,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const variants = {
       primary: 'btn-primary',
       ghost: 'btn-ghost',
-      outline: 'inline-flex items-center justify-center gap-2 rounded-full border border-gold/60 font-semibold text-gold hover:bg-gold hover:text-ink transition-colors',
+      outline: 'inline-flex items-center justify-center gap-2 rounded-full border border-gold/60 font-semibold text-gold hover:bg-gold hover:text-black transition-colors',
       danger: 'inline-flex items-center justify-center gap-2 rounded-full border border-red-400/40 text-red-300 hover:bg-red-500/10 transition-colors',
     }
     const sizes = { sm: 'h-9 px-5 text-xs', md: 'h-11 px-6 text-sm', lg: 'h-12 px-8 text-[15px]' }

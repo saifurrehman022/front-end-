@@ -101,7 +101,7 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
                 </div>
                 <h3 className="mt-6 font-mono text-[11px] uppercase tracking-[0.16em] text-gold">Typical stack</h3>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {s.stack.map(t => <span key={t} className="rounded-full bg-white/[0.05] px-3 py-1.5 font-mono text-xs text-fg-2">{t}</span>)}
+                  {s.stack.map(t => <span key={t} className="rounded-full bg-fg/[0.05] px-3 py-1.5 font-mono text-xs text-fg-2">{t}</span>)}
                 </div>
                 <Link href="/contact" className="btn-primary mt-8 w-full">Discuss your project</Link>
               </Reveal>
