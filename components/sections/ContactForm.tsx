@@ -104,7 +104,7 @@ export default function ContactForm() {
       </label>
       <input type="text" name="website" value={form.website} onChange={set} tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
       {state === 'error' && (
-        <p role="alert" className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 font-dm text-sm text-red-300">
+        <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 font-dm text-sm text-red-600">
           Something went wrong. Please email us directly at {siteConfig.email}.
         </p>
       )}
