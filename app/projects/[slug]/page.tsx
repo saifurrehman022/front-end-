@@ -5,12 +5,13 @@ import { ArrowRight, Check, CheckCircle2 } from 'lucide-react'
 import Container from '@/components/layout/Container'
 import PageHeader from '@/components/layout/PageHeader'
 import ProjectCard from '@/components/sections/ProjectCard'
+import ProjectCover from '@/components/projects/ProjectCover'
 import CTASection from '@/components/sections/CTASection'
 import JsonLd from '@/components/seo/JsonLd'
 import { Reveal } from '@/components/motion/Motion'
 import { ShowcasePlayer, YouTubeLite } from '@/components/media/Video'
 import { videos } from '@/lib/media'
-import { getProject, projects } from '@/lib/projects'
+import { getProject, projectGroups, projects } from '@/lib/projects'
 import { getService } from '@/lib/services'
 import { breadcrumbSchema, pageMetadata, videoSchema } from '@/lib/seo'
 
@@ -30,14 +31,21 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
   if (!p) notFound()
   const path = `/projects/${p.slug}`
   const v = videos[p.video]
-  const more = projects.filter(o => o.slug !== p.slug && o.category === p.category).slice(0, 3)
+  const others = projects.filter(o => o.slug !== p.slug)
+  const more = [...others.filter(o => o.group === p.group), ...others.filter(o => o.group !== p.group)].slice(0, 3)
+  const glance = [
+    { k: 'Client', v: p.client ?? 'Confidential' },
+    { k: 'Year', v: p.year ?? '—' },
+    { k: 'Discipline', v: projectGroups[p.group] },
+    { k: 'Key result', v: `${p.metric.value} · ${p.metric.label}` },
+  ]
 
   return (
     <>
       <JsonLd
         data={[
           breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Projects', path: '/projects' }, { name: p.title, path }]),
-          videoSchema({ name: p.title, description: p.summary, poster: v.poster, src: v.mp4, date: p.date, duration: 'PT8S', path }),
+          ...(p.showVideo ? [videoSchema({ name: p.title, description: p.summary, poster: v.poster, src: v.mp4, date: p.date, duration: 'PT8S', path })] : []),
         ]}
       />
       <PageHeader eyebrow={p.tag} title={p.title} sub={p.summary} crumbs={[{ name: 'Home', href: '/' }, { name: 'Projects', href: '/projects' }, { name: p.title }]}>
@@ -51,11 +59,23 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
           <Reveal>
             {p.youtubeId ? (
               <YouTubeLite id={p.youtubeId} title={p.title} />
-            ) : (
-              <div className="rounded-[28px] bg-gradient-to-br from-gold/40 via-fg/10 to-cyan/30 p-px">
-                <ShowcasePlayer src={v} title={p.title} className="aspect-video rounded-[27px] bg-ink-3" />
+            ) : p.showVideo ? (
+              <div className="overflow-hidden rounded-[28px] border border-line shadow-[var(--shadow-lg)]">
+                <ShowcasePlayer src={v} title={p.title} className="aspect-video bg-ink-3" />
               </div>
+            ) : (
+              <ProjectCover p={p} size="hero" className="aspect-[16/9] rounded-[28px] shadow-[var(--shadow-lg)] sm:aspect-[21/9]" />
             )}
+          </Reveal>
+          <Reveal delay={0.05}>
+            <dl className="mt-6 grid grid-cols-2 overflow-hidden rounded-3xl border border-line lg:grid-cols-4">
+              {glance.map((g, i) => (
+                <div key={g.k} className={`p-6 ${i % 2 ? '' : 'border-r border-line'} ${i < 2 ? 'border-b border-line lg:border-b-0' : ''} ${i === 1 ? 'lg:border-r' : ''} ${i === 2 ? 'lg:border-r' : ''}`}>
+                  <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-fg-3">{g.k}</dt>
+                  <dd className="mt-2 font-dm text-[15px] font-semibold leading-snug text-fg">{g.v}</dd>
+                </div>
+              ))}
+            </dl>
           </Reveal>
         </Container>
       </section>
@@ -96,6 +116,12 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                 </ul>
                 <Link href="/contact" className="btn-primary mt-6 w-full text-sm">Build something similar <ArrowRight size={14} /></Link>
               </div>
+              <div className="glass rounded-3xl p-6">
+                <h2 className="font-mono text-[11px] uppercase tracking-[0.16em] text-gold">Tech stack</h2>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {p.stack.map(t => <span key={t} className="rounded-full border border-line px-2.5 py-1 font-mono text-[11px] text-fg-2">{t}</span>)}
+                </div>
+              </div>
             </aside>
           </div>
         </Container>
@@ -104,7 +130,10 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
       {more.length > 0 && (
         <section className="section border-t border-line">
           <Container>
-            <p className="eyebrow mb-5">More projects</p>
+            <div className="mb-8 flex items-end justify-between gap-4">
+              <p className="eyebrow">More case studies</p>
+              <Link href="/projects" className="font-dm text-sm font-semibold text-fg hover:text-gold">All projects →</Link>
+            </div>
             <ul className="grid grid-cols-1 gap-5 md:grid-cols-3">
               {more.map(m => <li key={m.slug}><ProjectCard p={m} /></li>)}
             </ul>
